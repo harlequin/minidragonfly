@@ -3,6 +3,7 @@ minidragonfly
 
 minidragonfly
 
+svn checkout https://github.com/harlequin/minidragonfly/trunk
 
 Task List for first release
 =============
