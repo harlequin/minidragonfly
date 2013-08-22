@@ -1,1 +1,2 @@
 83462: 'Castle (2009)', 'Castle', 'Castle 2009'
+82459: 'The Mentalist', 'Gedankenleser'
