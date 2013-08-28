@@ -1,0 +1,13 @@
+{
+	"exceptions": [
+		{
+			"tvdbid": "83462",
+			"scene_names":[ "Castle (2009)", "Castle", "Castle 2009" ]
+		},
+		
+		{
+			"tvdbid": "82459",
+			"scene_names":[ "The Mentalist", "Gedankenleser" ]
+		}		
+	]
+}
