@@ -1,2 +1,3 @@
 83462: 'Castle (2009)', 'Castle', 'Castle 2009'
 82459: 'The Mentalist', 'Gedankenleser'
+248741: '2 Broke Girls', 'Zwei bankrotte Mädchen'
