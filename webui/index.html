@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>minidragonfly</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">	
+    <meta name="description" content="minidragonfly">
+    <meta name="author" content="">
+   
+    <link href="./css/bootstrap.min.css" rel="stylesheet">
+	<!--<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">-->
+	<link href="./css/flags.css" rel="stylesheet"/>	
+	<!--<link href='http://fonts.googleapis.com/css?family=Lato:400' rel='stylesheet' type='text/css'>	-->
+    <style>
+	
+		body {
+			background-color: #e2e2e2;
+			font-family: Helvetica,Lato;			
+		}
+		
+		#content {
+			background-color: #f1f1f1;
+			box-shadow: 0 0 5px 5px #888;
+			padding: 0px 0px 0px 0px;
+		}
+
+		.navbar.transparent.navbar-inverse .navbar-inner {
+			background: rgba(0,0,0,0.4);
+			border-bottom: 1px solid rgb(88, 88, 88);
+		}
+		.navbar.transparent.navbar-inverse .navbar-inner .container {
+			-webkit-transition: margin .2s ease-in-out;
+			-moz-transition: margin .2s ease-in-out;
+			transition: margin .2s ease-in-out;
+		}
+		.navbar.navbar-inverse .navbar-inner {  
+			background: #252528;    
+			color:white;
+		}
+		
+		.navbar.navbar-inverse .navbar-inner.sticky {
+			background: rgba(0,0,0,0.8);
+			border-bottom: 1px solid #252525;
+		}
+		.navbar-inverse .navbar-inner.sticky .container {
+			margin-top: 0px !important;
+			margin-bottom: 0px !important;
+		}
+		
+		.navbar {
+			position: fixed !important;
+			//top: 0px;
+			width: 1520px;
+			left:auto;
+			right:auto
+		}
+		
+		
+		.navbar-inner .container {width:1000px;}
+		
+		
+		
+		.fade {
+    height: 100%;
+    width: 100%;
+    position:absolute;
+    background: -webkit-linear-gradient(left, 
+                rgba(0,0,0,0.65) 0%, 
+                rgba(0,0,0,0) 20%,
+                rgba(0,0,0,0) 80%,
+                rgba(0,0,0,0.65) 100%
+    );
+}
+
+
+	.inner-content {
+		padding: 20px 20px 20px 20px;		
+	}
+	
+	hr {
+  -moz-border-bottom-colors: none;
+  -moz-border-image: none;
+  -moz-border-left-colors: none;
+  -moz-border-right-colors: none;
+  -moz-border-top-colors: none;
+  border-color: #EEEEEE -moz-use-text-color #FFFFFF;
+  border-style: solid none;
+  border-width: 1px 0;
+  margin: 18px 0;
+}
+	/* Set the fixed height of the footer here */
+         #push,
+         #footer {
+           /*height: 60px;*/
+         }
+         #footer {
+           background-color: #252525;
+		   padding-top: 20px;
+         }
+
+         /* Lastly, apply responsive CSS fixes as necessary */
+         @media (max-width: 767px) {
+           #footer {
+             margin-left: -20px;
+             margin-right: -20px;
+             padding-left: 20px;
+             padding-right: 20px;
+           }
+         }
+		 
+
+    </style>	
+	</head>
+	<body>
+		
+		<div class='container' style="width: 1520px">
+			
+	
+			<div class="navbar transparent navbar-inverse navbar-fixed-top">		
+				<div class="navbar-inner">			
+					<div class="container">
+						<div class="nav-collapse collapse">
+							<a class="brand" href="#" style="color:green">minidragonfly</a>
+							<ul class="nav">
+								<li class="active"><a href="#home" data-toggle="tab">Home</a></li>							
+								<li><a href="#shows" data-toggle="tab">TV Shows</a></li>
+								
+								
+							</ul>
+
+							<ul class="nav pull-right">
+								<li class="divider-vertical"></li>
+								<li class="dropdown pull-right">
+									<a href="#" class="dropdown-toggle" data-toggle="dropdown">Menu <b class="caret"></b></a>
+									<ul class="dropdown-menu">
+										<li><a href="#add_show" data-toggle="tab">Add TV Show</a></li>		
+										<li><a href="#">Search all tv shows</a></li>
+										<li><a href="#postprocess_dialog" data-toggle="modal">Manual Post-Processing</a></li>									
+										<li class="divider"></li>
+										<li><a href="#about" data-toggle="tab" >About</a></li>
+										<li class="divider"></li>
+										<li><a href="#" data-toggle="tab" id="shutdown" >Shutdown</a></li>
+										<!--<li class="divider"></li>
+										<li><a href="#">Separated link</a></li>-->
+									</ul>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+				
+			
+			<div id='content' class='container-fluid'>
+	
+	
+	
+	
+	
+							<div id="newsCarousel" class="carousel slide" >
+								<!-- Carousel items -->
+								<div class="carousel-inner" id="news">													
+								</div>
+								<!-- Carousel nav -->
+								<a class="carousel-control left" href="#newsCarousel" data-slide="prev">&lsaquo;</a>
+								<a class="carousel-control right" href="#newsCarousel" data-slide="next">&rsaquo;</a>													
+								<ol class="carousel-indicators">
+									<li data-target="#newsCarousel" data-slide-to="0" class="active"></li>
+									<li data-target="#newsCarousel" data-slide-to="1"></li>
+									<li data-target="#newsCarousel" data-slide-to="2"></li>
+								</ol>							
+							</div>
+	
+	
+	
+	
+	
+	
+				<div class="tab-content">
+	
+	
+	
+					<div id="shows" class="tab-pane fade in">
+						<div class="inner-content">
+							<h1>TV Shows</h1>
+											
+								<div class="form-inline toolbox-top clearfix" id="ShowsTableTopBlock">				
+									<div class="pagination pull-right"><ul id="DownloadsTable_pager"></ul></div>			
+								</div>
+											
+								<table class="table table-striped table-bordered table-check table-cancheck datatable table-hover" id="SeriesTable">
+								<thead>
+									<tr>					
+										<th class="text-center" width="50px"><div class="check img-check"></div></th>
+										<th class="text-center" width="50px">Language</th>
+										<th class="text-center">Name</th>					
+										<th class="text-center">Status</th>					
+										<th class="text-center" width="50px">Skipped</th>
+										<th class="text-center" width="50px">Wanted</th>
+										<th class="text-center" width="50px">Archived</th>
+										<th class="text-center" width="50px">Ignored</th>
+										<th class="text-center" width="50px">Snatched</th>
+									</tr>					
+								</thead>
+								<tbody></tbody>
+								</table>
+								
+								<div class="toolbox-info clearfix">
+									<div id="ShowTable_info"></div>
+								</div>
+
+								
+								
+						</div>
+					</div>
+					
+	
+	
+					<!-- TV SHOW EPISODE LISTING -->
+					<div id="show_details" class="tab-pane fade in container-fluid">	
+						<div class="inner-content">			
+			
+							<div class="well">
+								<h3>Information</h3>
+							</div>
+								
+							<table class="table table-striped table-bordered table-check table-cancheck datatable table-hover" id="EpisodesTable">
+								<thead>
+									<tr>							
+										<th class="text-center" width="50px"></th>
+										<th class="text-center" width="50px">Season</th>
+										<th class="text-center" width="50px">Episode</th>
+										<th class="text-center">Title</th>
+										<th class="text-center" width="50px">Quality</th>
+										<th class="text-center" width="50px">Status</th>
+										<th class="text-center">nzb</th>
+									</tr>
+								</thead>
+								<tbody></tbody>
+							</table>			
+						</div>
+					</div>		
+					<!-- =============================================== -->
+	
+	
+	
+	
+	
+					<div id="add_show" class="tab-pane fade in">
+						<div class="inner-content">
+							<h2>NEW TV SHOW</h2>
+							
+							<div class="page-header">
+								<p class="lead">Add new tv show to your list</p>
+							</div>
+							
+							
+							<legend>Search</legend>			
+							<div class="control-group input-append span3">
+								<label class="control-label" for="search_language">Language</label>
+								<div class="controls">
+									<select id="search_language">
+										<option value="en">English</option>
+										<option value="de">German</option>
+									</select>
+								</div>
+			
+								<label class="control-label" for="search_show_value">TV Show name</label>
+								<div class="controls">
+									<input type="text" id="search_show_value" placeholder="The Mentalist">
+												
+								<button class="btn" type="button" id="search_show_button">Search</button>														
+								
+								</div>
+								
+								<label class="control-label" for="search_language">Result</label>
+								<select id="search_results"></select>
+							</div>
+								
+							<legend>Quality</legend>			
+							<div class="input-append">											
+								<select id="search_operator">
+									<option value="0">match</option>
+									<option value="1">match or better</option>
+									<option value="2">match or less</option>
+								</select>
+									
+								<select id="search_quality"></select>
+								<!--<span class="help-block">Example block-level help text here.</span>-->
+								
+																
+							</div>
+							<div class="controls controls-row">
+								<label class="span3 control-label" for="custom_search_quality">One of the initial quality selections ...</label>
+								<select class="span2" id="custom_search_quality" multiple="multiple" size="10"></select>
+							</div>
+							
+							
+								
+							<legend>Status</legend>
+							<div>
+							
+							<select id="search_status">
+									<option value="0">Skipped</option>
+									<option value="1">Wanted</option>
+									<option value="2">Archived</option>
+									<option value="3">Ignored</option>
+								</select>	
+							</div>														
+														
+							<legend>Output</legend>			
+							<div>
+							<input class="span2" id="search_location" type="text"></p>
+							</div>
+									
+							<p>			
+								<button class="btn btn-primary" type="button" id="add_show_button">Add</button>			
+							</p>
+						</div>											
+					</div>
+	
+	
+	
+	
+	
+	
+	
+	
+					<div id="about" class="tab-pane">
+						<div class="inner-content">
+							<h1>About</h1>						
+						</div>						
+					</div>
+	
+					<div id="home" class="tab-pane active">								
+						<div class="inner-content">				
+							<h1>Welcome to miniscan</h1>	
+							<p>miniscan is a little application which supports the tracking and searching of tv shows and movies</p>			
+							<h3>NEWS</h3>							
+							<ul class="thumbnails" id="recent_actions">
+							</ul>
+						</div>						
+					</div>
+				</div>
+				
+				
+			
+			
+			
+					
+			 <div id="footer">
+			  <div class="container">
+				<!--<p class="muted credit">Example courtesy <a href="http://martinbean.co.uk">Martin Bean</a> and <a href="http://ryanfait.com/sticky-footer/">Ryan Fait</a>.</p>-->
+				<p class="muted credit center">
+				<small>Code licensed under <a href="http://opensource.org/licenses/mit-license.html">MIT License</a></small>
+				<!--
+				<br><small id="lblVersion">Version:</small>
+				<br><small id="lblHash">Hash:</small>
+				-->
+				<hr>
+				<a href="https://github.com/harlequin/minidragonfly">
+				<i class="icon-github icon-3x"></i>
+				</a>
+				</p>
+			  </div>
+			</div>
+			
+			
+			
+			</div>
+		</div>
+	
+	
+	
+	
+		<div class="modal hide" id="postprocess_dialog">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<b>Manual Post-Processing</b>
+			</div>
+			
+			<div class="modal-body">
+				<p>Enter the folder containing the episode:</p>
+				<input type="text" id="postprocess_directory" placeholder="/media/library" />
+			</div>
+			
+			<div class="modal-footer">
+				<a href="#" onclick="ManualPostProcessDialog.click()" class="btn">Close</a>
+				<a href="#" onclick="ManualPostProcessDialog.process()" class="btn btn-primary">Process</a>
+			</div>
+		
+		</div>
+	
+	
+	
+		<script src="./js/jquery.min.js"></script>	
+		<script src="./js/bootstrap.min.js"></script>
+		<script src="./js/fasttable.js"></script>
+		<script src="./index.js"></script> 	
+		<script>
+		$(function () {
+			$(window).scroll(function() {
+				if ($(".navbar").offset().top>300) {
+					$(".navbar-inner").addClass("sticky");
+				} else {
+					$(".navbar-inner").removeClass("sticky");
+				}
+			});
+		});
+		
+		
+		
+		
+		
+		var data = [];		
+		$.getJSON("/json?method=get_latest_news", function(result) { 			                    
+			var arr = [], i = result.feeds.length;			
+			while(i--){
+				//console.log("ITEM");
+				var item =
+				{
+					id: result.feeds[i].id,
+					comment: result.feeds[i].comment,
+				};
+				data.push("<li class='span3' ><a showid='" + item.id + "' href='#show_details' data-toggle='tab' onClick='javascript:show_details.update(" + item.id + ");' class='thumbnail' ><img data-src='holder.js/360x270' src='cache/tvthumb/" + item.id + ".png' alt=''  /></a></li>");		
+			}			
+			$('#recent_actions').append(data.join(''));			
+		});
+		
+		
+		
+		
+		
+		
+		
+/*** REMOTE PROCEDURE CALLS VIA JSON-RPC *************************************************/
+
+var RPC = (new function($)
+{
+	'use strict';
+	
+	// Properties
+	this.rpcUrl = "/jsonrpc";
+	//this.defaultFailureCallback;
+	this.connectErrorMessage = 'Cannot establish connection';
+
+	this.call = function(method, params, completed_callback, failure_callback)
+	{
+		var _this = this;
+		
+		var request = JSON.stringify({nocache: new Date().getTime(), method: method, params: params});
+		var xhr = new XMLHttpRequest();
+
+		xhr.open('post', this.rpcUrl);
+
+		// Example for cross-domain access:
+		//xhr.open('post', 'http://localhost:6789/jsonrpc');
+		//xhr.withCredentials = 'true';
+		//xhr.setRequestHeader('Authorization', 'Basic ' + window.btoa('myusername:mypassword'));
+
+		xhr.onreadystatechange = function()
+		{
+			if (xhr.readyState === 4)
+			{
+					var res = 'Unknown error';
+					var result;
+					if (xhr.status === 200)
+					{
+						//console.log("e");
+					
+						if (xhr.responseText != '')
+						{
+							try
+							{	
+								//console.log(xhr.responseText);							
+								result = JSON.parse(xhr.responseText);
+								//console.log(result);
+							}
+							catch (e)
+							{
+								console.log(e);
+								res = e;								
+							}
+							if (result)
+							{
+								
+								//console.log(result.error)
+							
+								if (result.error == null)
+								{
+								
+									res = result.data;
+									if(completed_callback)
+										completed_callback(res);									
+									return;
+								}
+								else
+								{
+									res = result.error.message + '<br><br>Request: ' + request;
+									//console.log(res);
+								}
+							}
+						}
+						else
+						{
+							res = 'No response received.';
+							console.log(res);
+						}
+					}
+					else if (xhr.status === 0)
+					{
+						res = _this.connectErrorMessage;
+						console.log(res);
+					}
+					else
+					{
+						res = 'Invalid Status: ' + xhr.status;
+						console.log(res);
+					}
+					
+					
+					
+
+					if (failure_callback)
+					{
+						failure_callback(res, result);
+					}
+					else
+					{
+						//_this.defaultFailureCallback(res, result);
+					}
+			}
+		};
+		xhr.send(request);
+	}
+	}(jQuery));
+	
+	
+	
+	
+	
+	
+		</script>
+	</body>
+</html>
