@@ -89,5 +89,6 @@ typedef _mode_t	mode_t;
 
 #undef HAVE_BACKTRACE
 
+#define F_OK 0
 
 #endif /* CONFIG_H_ */

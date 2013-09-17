@@ -1,22 +1,19 @@
-// Copyright (c) 2004-2012 Sergey Lyubka
+// Copyright (c) 2004-2013 Sergey Lyubka <valenok@gmail.com>
+// Copyright (c) 2013 Cesanta Software Limited
+// All rights reserved
 //
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
+// This library is dual-licensed: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License version 2 as
+// published by the Free Software Foundation. For the terms of this
+// license, see <http://www.gnu.org/licenses/>.
 //
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// You are free to use this library under the terms of the GNU General
+// Public License, but WITHOUT ANY WARRANTY; without even the implied
+// warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU General Public License for more details.
 //
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// Alternatively, you can license this library under a commercial
+// license, as set out in <http://cesanta.com/products.html>.
 
 #ifndef MONGOOSE_HEADER_INCLUDED
 #define  MONGOOSE_HEADER_INCLUDED
@@ -43,6 +40,7 @@ struct mg_request_info {
   int remote_port;            // Client's port
   int is_ssl;                 // 1 if SSL-ed, 0 if not
   void *user_data;            // User data pointer passed to mg_start()
+  void *conn_data;            // Connection-specific, per-thread user data.
 
   int num_headers;            // Number of HTTP headers
   struct mg_header {
@@ -54,7 +52,7 @@ struct mg_request_info {
 
 // This structure needs to be passed to mg_start(), to let mongoose know
 // which callbacks to invoke. For detailed description, see
-// https://github.com/valenok/mongoose/blob/master/UserManual.md
+// https://github.com/cesanta/mongoose/blob/master/docs/UserManual.md
 struct mg_callbacks {
   // Called when mongoose has received new HTTP request.
   // If callback returns non-zero,
@@ -118,11 +116,23 @@ struct mg_callbacks {
   //    file_file: full path name to the uploaded file.
   void (*upload)(struct mg_connection *, const char *file_name);
 
-  // Called when mongoose is about to send HTTP error to the client.
-  // Implementing this callback allows to create custom error pages.
+  // Called at the beginning of mongoose's thread execution in the context of
+  // that thread. To be used to perform any extra per-thread initialization.
   // Parameters:
-  //   status: HTTP error status code.
-  int  (*http_error)(struct mg_connection *, int status);
+  //  user_data: pointer passed to mg_start
+  //  conn_data: per-connection, i.e. per-thread pointer. Can be used to
+  //             store per-thread data, for example, database connection
+  //             handles. Persistent between connections handled by the
+  //             same thread.
+  //             NOTE: this parameter is NULL for master thread, and non-NULL
+  //             for worker threads.
+  void (*thread_start)(void *user_data, void **conn_data);
+
+  // Called when mongoose's thread is about to terminate.
+  // Same as thread_start() callback, but called when thread is about to be
+  // destroyed. Used to cleanup the state initialized by thread_start().
+  // Parameters: see thread_start().
+  void (*thread_stop)(void *user_data, void **conn_data);
 };
 
 // Start web server.
@@ -132,10 +142,12 @@ struct mg_callbacks {
 //   options: NULL terminated list of option_name, option_value pairs that
 //            specify Mongoose configuration parameters.
 //
-// Side-effects: on UNIX, ignores SIGCHLD and SIGPIPE signals. If custom
-//    processing is required for these, signal handlers must be set up
+// Side-effects: on UNIX, ignores SIGPIPE signals. If custom
+//    processing is required SIGPIPE, signal handler must be set up
 //    after calling mg_start().
 //
+// Important: Mongoose does not install SIGCHLD handler. If CGI is used,
+// SIGCHLD handler must be set up to reap CGI zombie processes.
 //
 // Example:
 //   const char *options[] = {
@@ -145,7 +157,7 @@ struct mg_callbacks {
 //   };
 //   struct mg_context *ctx = mg_start(&my_func, NULL, options);
 //
-// Refer to https://github.com/valenok/mongoose/blob/master/UserManual.md
+// Refer to https://github.com/cesanta/mongoose/blob/master/docs/UserManual.md
 // for the list of valid option and their possible values.
 //
 // Return:
@@ -173,7 +185,8 @@ const char *mg_get_option(const struct mg_context *ctx, const char *name);
 
 
 // Return array of strings that represent valid configuration options.
-// For each option, a short name, long name, and default value is returned.
+// For each option, option name and default value is returned, i.e. the
+// number of entries in the array equals to number_of_options x 2.
 // Array is NULL terminated.
 const char **mg_get_valid_option_names(void);
 
@@ -232,9 +245,9 @@ enum {
 
 // Macros for enabling compiler-specific checks for printf-like arguments.
 #undef PRINTF_FORMAT_STRING
-#if _MSC_VER >= 1400
+#if defined(_MSC_VER) && _MSC_VER >= 1400
 #include <sal.h>
-#if _MSC_VER > 1400
+#if defined(_MSC_VER) && _MSC_VER > 1400
 #define PRINTF_FORMAT_STRING(s) _Printf_format_string_ s
 #else
 #define PRINTF_FORMAT_STRING(s) __format_string s

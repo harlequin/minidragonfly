@@ -150,7 +150,7 @@ void signal_handler(int sig) {
 	switch(sig) {
 		case SIGSEGV:
 		signal(SIGSEGV, SIG_DFL);
-		PrintBacktrace();
+		print_backtrace();
 		break;
 	}
 #endif
