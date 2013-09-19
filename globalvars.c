@@ -69,7 +69,7 @@ char *options[] = {
 		"nzbget_category",			"Shows",
 
 		/* TVDBAPI */
-		"tvdb_apikey",				"9DAF49C96CBF8DAC",
+		"tvdb_apikey",				"",
 
 		NULL,
 };
