@@ -70,6 +70,9 @@ char *options[] = {
 		/* TVDBAPI */
 		"tvdb_apikey",				"",
 
+
+		"ssl_certificate",			"",
+
 		NULL,
 };
 

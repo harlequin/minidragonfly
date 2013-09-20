@@ -68,7 +68,8 @@ typedef enum {
 	OPT_NZBGET_USER = 31,
 	OPT_NZBGET_PASSWORD = 33,
 	OPT_NZBGET_CATEGORY = 35,
-	OPT_TVDB_APIKEY = 37
+	OPT_TVDB_APIKEY = 37,
+	OPT_SSL_CERTIFCATE = 39
 } option_names_e;
 
 char *read_config_file(const char *config, char **options);

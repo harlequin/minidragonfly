@@ -27,13 +27,13 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 
-#include <io.h>
-
-//#ifdef WIN32
 //#include <io.h>
-//#else
-//#include <unistd.h>
-//#endif
+
+#ifdef WIN32
+#include <io.h>
+#else
+#include <unistd.h>
+#endif
 
 #include <sys/types.h>
 #include <sys/stat.h>

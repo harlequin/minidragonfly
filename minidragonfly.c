@@ -25,7 +25,11 @@
 
 #include <stdio.h>
 #include <string.h>
+#ifdef WIN32
 #include <io.h>
+#else
+#include <unistd.h>
+#endif
 #include "mongoose.h"
 #include <sqlite3.h>
 
@@ -366,7 +370,7 @@ static struct mg_context *start_webserver(void) {
 	set_option( opt, "url_rewrite_patterns", url_rewrite);
 
 
-	set_option( opt, "ssl_certificate", "./oscam.pem" );
+	set_option( opt, "ssl_certificate", options[OPT_SSL_CERTIFCATE] );
 	//set_option( options, "authentication_domain", "miniscan.com");
 	//set_option( options, "protect_uri","/*");
 	//set_option( options, "global_auth_file", ".htpasswd");
