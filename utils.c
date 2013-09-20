@@ -415,7 +415,8 @@ void nzbget_appendurl ( const char *filename, const char *category, int priority
 	base64auth = malloc(255);
 	post_data = malloc( size );
 
-	strcpy(auth, "nzbget:");
+	strcpy(auth, options[OPT_NZBGET_USER]);
+	strcat(auth, ":");
 	strcat(auth, options[OPT_NZBGET_PASSWORD]);
 
 	base64_encode( (unsigned char*) auth, strlen(auth), base64auth);

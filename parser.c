@@ -413,28 +413,29 @@ void showcmp(feed_item_t *feed_items, char *show_id) {
 					if( (db_quality & qual) == qual) {
 						sql_exec(db, sqlite3_mprintf("UPDATE tv_episode SET status = 4, nzb = '%s' WHERE id = '%s'", item->title, result[i]));
 
-							
 
-						//Todo: implement full setting ... category, prio, clean name,
-						// direct method with link
-						//nzbget_appendurl(item->title, minidragonfly_options[CONF_NZBGET_CATEGORY], 0, 0, item->link);
 
-						// another method can the black hole ...
-
-						 
-						chunk = malloc(sizeof (struct memory_struct));
-						download(item->link, chunk);
-						if(chunk->size > 0) {
-							nzb = malloc(255);
-							sprintf(nzb, "%s/%s.nzb", options[OPT_BLACK_HOLE_DIR], item->title);
-							f = fopen(nzb, "wb");
-
-							fwrite(chunk->memory, chunk->size, 1, f);
-
-							fclose(f);
-							free(nzb);
-							free(chunk->memory);
+						if(strcmp(options[OPT_NZBGET_ACTIVE], "yes") ) {
+							//Todo: implement full setting ... category, prio, clean name,
+							//direct method with link
+							nzbget_appendurl(item->title, options[OPT_NZBGET_CATEGORY], 0, 0, item->link);
 						}
+
+						if(strcmp(options[OPT_BLACK_HOLE_ACTIVE], "yes") ) {
+							chunk = malloc(sizeof (struct memory_struct));
+							download(item->link, chunk);
+							if(chunk->size > 0) {
+								nzb = malloc(255);
+								sprintf(nzb, "%s/%s.nzb", options[OPT_BLACK_HOLE_DIR], item->title);
+								f = fopen(nzb, "wb");
+								fwrite(chunk->memory, chunk->size, 1, f);
+								fclose(f);
+								free(nzb);
+								free(chunk->memory);
+							}
+						}
+
+
 					}
 				}
 				item = item->next;
