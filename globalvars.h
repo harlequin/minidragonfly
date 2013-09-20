@@ -71,6 +71,6 @@ typedef enum {
 	OPT_TVDB_APIKEY = 37
 } option_names_e;
 
-char *read_config_file(const char *config, char **options /* char **opt_name, char **opt_val*/ );
-
+char *read_config_file(const char *config, char **options);
+void trim_blanks (char *s);
 #endif

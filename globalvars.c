@@ -32,7 +32,6 @@
 #include "log.h"
 
 volatile short int quitting = 0;
-//char *db_path = ".";
 sqlite3 *db;
 
 
@@ -117,7 +116,6 @@ char *read_config_file(const char *config, char **options /*char **opt_name, cha
 
 			if (options[i]) {
 				options[i + 1]=strdup(c);
-				printf("Options [%d] %s = %s\n",i, options[i], options[i+1]);
 			}
 		}
 	}

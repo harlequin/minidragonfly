@@ -27,31 +27,6 @@
 #include "types.h"
 
 
-
-//#define QUALITY_TABLE 				\
-//	X(QUALITY_NONE, = 0, "N/A") 		\
-//	X(QUALITY_SDTV, = 1, "SD TV")
-//
-//#define X(a, b, c) a b,
-//enum QUALITY {
-//	QUALITY_TABLE
-//};
-//
-//#undef X
-//
-//#define X(a, b, c) [a]=c,
-//char *quality_name[] = {
-//		QUALITY_TABLE
-//};
-//
-//#undef X
-
-
-
-/*
-//{QUALITY_NONE, "N/A"},
-//		{QUALITY_SDTV, "SD TV"},
-*/
 typedef struct {
 	const char *series_name;
 	const char *season_num;

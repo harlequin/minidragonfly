@@ -21,10 +21,11 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "config.h"
+
 
 #include <stdio.h>
 #include <string.h>
+#include <io.h>
 #include "mongoose.h"
 #include <sqlite3.h>
 
@@ -53,6 +54,8 @@
 #include "version.h"
 #include "utils.h"
 #include "processor.h"
+
+#include "config.h"
 
 #if SQLITE_VERSION_NUMBER < 3005001
 # warning "Your SQLite3 library appears to be too old!  Please use 3.5.1 or newer."
@@ -159,7 +162,7 @@ void signal_handler(int sig) {
 static int init(int argc, char ** argv) {
 
 #ifdef WIN32
-	SetUnhandledExceptionFilter(unhandled_handler);
+	//SetUnhandledExceptionFilter(unhandled_handler);
 	SetConsoleCtrlHandler(&run_shutdown_win, TRUE);
 #else
 	
@@ -330,14 +333,14 @@ static char *sdup(const char *str) {
   return p;
 }
 
-static void set_option( char **options, const char *name, const char *value ) {
+static void set_option( char **opt, const char *name, const char *value ) {
 	int i;
 
 	for(i = 0; i < MAX_CONFIG - 3; i++) {
-		if(options[i] == NULL) {
-			options[i] = sdup(name);
-			options[i+1] = sdup(value);
-			options[i+2] = NULL;
+		if(opt[i] == NULL) {
+			opt[i] = sdup(name);
+			opt[i+1] = sdup(value);
+			opt[i+2] = NULL;
 			break;
 		}
 	}
@@ -356,11 +359,14 @@ static struct mg_context *start_webserver(void) {
 
 	opt[0] = NULL;
 
+	DPRINTF(E_DEBUG, L_GENERAL, "Document root: %s\n", options[OPT_WEB_DIR]);
+
 	set_option( opt, "document_root", options[OPT_WEB_DIR] );
 	set_option( opt, "listening_ports", options[OPT_CONTROL_PORT] );
-	//set_option( options, "ssl_certificate", "ssl.pem" );
 	set_option( opt, "url_rewrite_patterns", url_rewrite);
 
+
+	set_option( opt, "ssl_certificate", "./oscam.pem" );
 	//set_option( options, "authentication_domain", "miniscan.com");
 	//set_option( options, "protect_uri","/*");
 	//set_option( options, "global_auth_file", ".htpasswd");
@@ -544,9 +550,9 @@ int main(int argc, char **argv) {
 	//	exit(0);
 	//}
 
-	DPRINTF(E_DEBUG, L_GENERAL, "Starting webserver.\n","");
+
 	ctx = start_webserver( );
-		
+	DPRINTF(E_DEBUG, L_GENERAL, "Webserver started.\n","");
 #ifdef MAKE_SEGFAULT
 	make_segfault();
 #endif

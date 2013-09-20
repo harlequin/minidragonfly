@@ -23,7 +23,7 @@
 
 
 #include <json/json.h>
-#include <mongoose.h>
+#include "mongoose.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -265,7 +265,7 @@ int begin_request_handler(struct mg_connection *conn) {
 	const struct mg_request_info *request_info = mg_get_request_info(conn);
 
 	char post_data[1024];
-	char method[255];
+	//char method[255];
 	int post_data_size;
 	json_object *obj;
 	json_object *json_method;
@@ -273,7 +273,7 @@ int begin_request_handler(struct mg_connection *conn) {
 	array_list *list = NULL;
 
 
-	unsigned char *error_code;
+	char *error_code;
 	char *answer;
 
 
@@ -284,8 +284,7 @@ int begin_request_handler(struct mg_connection *conn) {
 	if( strcmp(request_info->uri, "/jsonrpc") == 0 ) {
 
 		post_data_size = mg_read( conn, post_data, sizeof(post_data)) ;
-
-		/*//DPRINTF(E_DEBUG, L_WEBSERVER, "[%d] %s\n", post_data_size, post_data);*/
+		DPRINTF(E_DEBUG, L_WEBSERVER, "[%d] %s\n", post_data_size, post_data);
 
 		obj = json_tokener_parse(post_data);
 
@@ -314,12 +313,15 @@ int begin_request_handler(struct mg_connection *conn) {
 				/*//give response that no method json was given*/
 			}
 		} else {
+
 			answer = malloc(1024);
 			error_code = malloc(1);
-			sprintf(error_code, "%d", obj);
+
+			sprintf(error_code, "%d", (int) obj);
 			sprintf(answer, "%s", json_tokener_errors[ (-1) * atoi(error_code) ]);
 			DPRINTF(E_WARN, L_WEBSERVER, "json parse error: %s\n", answer);
 			mg_printf( conn, rpc_response(FALSE, answer));
+
 			free(answer);
 			free(error_code);
 		}

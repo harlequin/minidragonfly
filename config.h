@@ -70,13 +70,9 @@ typedef _mode_t	mode_t;
 #define usleep(usec) Sleep((usec) / 1000)
 #define size_t SIZE_T
 
-
 #define snprintf _snprintf
 #define F_OK    0
-
-/*
-//#define mkdir(x,y) mkdir(x, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH)
-*/
+#define mkdir(x,y) mkdir(x)
 
 #else
 
@@ -84,11 +80,5 @@ typedef _mode_t	mode_t;
 
 
 #endif
-
-
-
-#undef HAVE_BACKTRACE
-
-#define F_OK 0
 
 #endif /* CONFIG_H_ */

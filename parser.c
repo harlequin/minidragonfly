@@ -26,16 +26,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <ctype.h>
 #include <pcre.h>
-/*
-//#ifdef WIN32
-//#include <io.h>
-//#else
-//#include <unistd.h>
-//#endif
-*/
-
 #include <json/json.h>
 
 
@@ -45,20 +37,6 @@
 #include "log.h"
 #include "sql.h"
 #include "parser.h"
-
-/*
-//enum COLOR {
-//  red,
-//  green,
-//  blue
-//};
-//
-//char *color_name[] = {
-//  red="red",
-//  green="green",
-//  blue="blue"
-//};
-*/
 
 enum TV_SHOWS_REGEXES {
 		REG_STANDARD_REPEAT = 0,
@@ -314,9 +292,10 @@ quality_e strqual ( const char *str ) {
 	/* complex method - try to find quality with regex from title */
 	/* added 'webhdrip' to sd */
 	/* added 'web' to sd */
+	/* on DVD quality added a question mark on xvid divx */
 	if( match( str, "(pdtv|hdtv|dsr|tvrip|webrip|webhdrip|web).(xvid|x264)", NULL) && ! match(str, "(720|1080)[pi]", NULL) ) {
 		return QUALITY_SDTV;
-	} else if ( match(str, "(dvdrip|bdrip)(.ws)?.(xvid|divx|x264)", NULL) && ! match(str, "(720|1080)[pi]", NULL) ) {
+	} else if ( match(str, "(dvdrip|bdrip)(.ws)?.(xvid|divx|x264)?", NULL) && ! match(str, "(720|1080)[pi]", NULL) ) {
 		return QUALITY_SDDVD;
 	} else if ( match(str, "720p", "hdtv", "x264", NULL) && ! match(str,"(1080)[pi]", NULL)  ) {
 		return QUALITY_HDTV;

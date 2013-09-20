@@ -33,6 +33,9 @@
 #endif
 #include <pcre.h>
 
+#include <libgen.h>
+#include <unistd.h>
+
 #include "globalvars.h"
 #include "config.h"
 #include "parser.h"
@@ -50,23 +53,6 @@ int process_file ( char *data );
 #ifndef WIN32
 #define GetLastError() 0
 #endif
-
-/*
-//  returns 1 if str ends with suffix
-//int str_ends_with(const char * str, const char * suffix) {
-//
-//  if( str == NULL || suffix == NULL )
-//    return 0;
-//
-//  size_t str_len = strlen(str);
-//  size_t suffix_len = strlen(suffix);
-//
-//  if(suffix_len > str_len)
-//    return 0;
-//
-//  return 0 == strncmp( str + str_len - suffix_len, suffix, suffix_len );
-//}
-*/
 
 #ifdef _MSC_VER
 
@@ -151,9 +137,6 @@ int get_id (const char *str) {
 	//return sql_get_int_field(db, "select tv_serie.id from tv_serie LEFT OUTER JOIN exception ON tv_serie.id = tvdb_id WHERE (tv_serie.title = '%s' or exception.name = '%s')", str, str);
 	return sql_get_int_field(db, "select tv_serie.id from tv_serie LEFT OUTER JOIN exception ON tv_serie.id = tvdb_id WHERE (tv_serie.title = '%s' COLLATE NOCASE or exception.name = '%s' COLLATE NOCASE)", str, str);
 }
-
-//#define GET_SHOW_ID(x) 
-//		sql_get_int_field(db, "select tv_serie.id from tv_serie LEFT OUTER JOIN exception ON tv_serie.id = tvdb_id WHERE (tv_serie.title = '%s' COLLATE NOCASE or exception.name = '%s' COLLATE NOCASE)", x, x);
 
 /* Missing / and \ : */
 char *path_escape_chars[] = {

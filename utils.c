@@ -21,13 +21,13 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "config.h"
-
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
 #include <sys/stat.h>
+
+#include <io.h>
 
 //#ifdef WIN32
 //#include <io.h>
@@ -40,7 +40,7 @@
 //#include <fcntl.h>
 #include <errno.h>
 #include <sqlite3.h>
-#include <mongoose.h>
+#include "mongoose.h"
 #include <json/json.h>
 
 #include "utils.h"
@@ -50,6 +50,9 @@
 #include "types.h"
 #include "globalvars.h"
 #include "url_parser.h"
+
+
+#include "config.h"
 
 
 void *s_malloc(size_t size) {
@@ -77,22 +80,22 @@ int download(const char *url, struct memory_struct *chunk) {
 	char ebuf[100];
 	char buffer[255];
 
-	char bigbuffer[2048];
+	//char bigbuffer[2048];
 
 	int bytes_read;
 	int port;
-	int i;
+	//int i;
 
 	struct mg_connection *conn;
 	struct parsed_url *uri;
 	struct parsed_url *proxy_uri;
 	int proxy_port;
-	struct mg_request_info *request;
+	struct mg_request_info *request = NULL;
 	char *proxy;
 
 	unsigned int use_ssl = 0;
-	char *req;
-	int num = 0;
+	//char *req;
+	//int num = 0;
 
 	if(chunk == NULL)
 		return -1;
@@ -156,6 +159,8 @@ int download(const char *url, struct memory_struct *chunk) {
 		chunk->size += bytes_read;
 		chunk->memory[chunk->size] = 0;
 	}
+
+
 
 	return 0;
 }
@@ -289,6 +294,8 @@ int make_dir(char * path, mode_t mode) {
 		if(access(path, 0/*F_OK*/) != 0) {
 		
 			//if (mkdir(path /*, mode*/) < 0) {
+
+
 			if (mkdir(path , mode) < 0) {
 
 
@@ -392,7 +399,7 @@ void base64_encode(const unsigned char *src, int src_len, char *dst) {
 void nzbget_appendurl ( const char *filename, const char *category, int priority, int add_to_top, const char *url ) {
 
 	char ebuf[100];
-	char reply[1000];
+	//char reply[1000];
 	char buf[1024];
 	char *post_data;
 	int use_ssl = 0;
@@ -411,7 +418,7 @@ void nzbget_appendurl ( const char *filename, const char *category, int priority
 	strcpy(auth, "nzbget:");
 	strcat(auth, options[OPT_NZBGET_PASSWORD]);
 
-	base64_encode(auth, strlen(auth), base64auth);
+	base64_encode( (unsigned char*) auth, strlen(auth), base64auth);
 
 	snprintf(post_data, size, post_template, filename, category, 0, url);
 
@@ -429,7 +436,7 @@ void nzbget_appendurl ( const char *filename, const char *category, int priority
 	//Todo: check results if the adding was successfull
 	if (conn != NULL) {
 	  len = mg_read(conn, buf, sizeof(buf));
-	  DPRINTF(E_INFO, L_GENERAL, "Answer from nzbget %s\n", buf);
+	  DPRINTF(E_INFO, L_GENERAL, "Answer from nzbget %s [%d]\n", buf, len);
 	  mg_close_connection(conn);
 	} else {
 		DPRINTF(E_INFO, L_GENERAL, "nzbget post ERROR %s\n", ebuf);
@@ -472,7 +479,7 @@ int is_video(const char * file) {
 
 
 
-//unsigned int exception_counter;
+unsigned int exception_counter;
 
 static void parse_exception_line(char *str) {
 	char *sql;
@@ -488,7 +495,7 @@ static void parse_exception_line(char *str) {
 		DPRINTF(E_DEBUG, L_GENERAL, "Save exception '%s' for '%d'\n", str, id);
 
 		sql = sqlite3_mprintf("INSERT INTO exception ('tvdb_id', 'name') VALUES (%d, '%s')", id, str);
-		//exception_counter++;
+		exception_counter++;
 		sql_exec(db, sql);
 	}
 }
@@ -504,18 +511,12 @@ static void parse_exception_line(char *str) {
  * TODO: add more return codes in combination with parse_exception line
  */
 void load_exceptions() {
-
-
-
-
 	char *token;
 	char *t;
 	FILE *f;
 	char line[128];
 	char *sql;
 	struct memory_struct *chunk;
-
-	printf("load exceptions\n");
 
 	sql = sqlite3_mprintf("DELETE FROM exception");
 	sql_exec(db, sql);
@@ -528,34 +529,32 @@ void load_exceptions() {
 		fclose(f);
 	}
 
-	//chunk = malloc(sizeof(struct memory_struct));
+	chunk = malloc(sizeof(struct memory_struct));
 
-//	download(EXCEPTIONS_SITE, chunk);
-//
-//	if(chunk->size > 0) {
-//		t = strtok(chunk->memory, "\n");
-//		do {
-//			parse_exception_line(t);
-//			/*
-//			 * at this point we have to work with token
-//			 * lenght + 1 to get the rest of the string
-//			 */
-//		} while ( (t = strtok( t + strlen(t) + 1, "\n" )) );
-//
-//	}
-//
-//	DPRINTF(E_INFO, L_GENERAL, "Loaded %d exceptions into database.\n", exception_counter);
+	download(EXCEPTIONS_SITE, chunk);
+
+	if(chunk->size > 0) {
+		t = strtok(chunk->memory, "\n");
+		do {
+			parse_exception_line(t);
+			/*
+			 * at this point we have to work with token
+			 * length + 1 to get the rest of the string
+			 */
+		} while ( (t = strtok( t + strlen(t) + 1, "\n" )) );
+
+	}
+
+	DPRINTF(E_INFO, L_GENERAL, "Loaded %d exceptions into database.\n", exception_counter);
 
 
-//
-//	chunk = malloc(sizeof(struct memory_struct));
-//	download("https://api.github.com/repos/harlequin/minidragonfly/compare/5df40aa24d5d805431903b0b2473d9f5ddaccf54...master", chunk);
-//	if(chunk->size > 0) {
-//		DPRINTF(E_INFO, L_GENERAL, "data: %s\n", chunk->memory);
-//
-//	}
-//
 
+	chunk = malloc(sizeof(struct memory_struct));
+	download("https://api.github.com/repos/harlequin/minidragonfly/compare/5df40aa24d5d805431903b0b2473d9f5ddaccf54...master", chunk);
+	if(chunk->size > 0) {
+		DPRINTF(E_INFO, L_GENERAL, "data: %s\n", chunk->memory);
+
+	}
 }
 //"ahead_by": 4,
 //"behind_by": 0,

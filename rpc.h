@@ -25,7 +25,7 @@
 #ifndef RPC_H_
 #define RPC_H_
 
-#include <mongoose.h>
+#include "mongoose.h"
 
 int begin_request_handler(struct mg_connection *conn);
 void search_for_series_by_name(struct mg_connection *conn, char *name, char *language);
