@@ -26,7 +26,7 @@
 
 
 
-#define MINIDRAGONFLY_VERSION "0.0.1"
+#define MINIDRAGONFLY_VERSION "1.0 - Aphrodite"
 #define SERVER_NAME "minidragonfly"
 #define EXCEPTIONS_SITE "http://harlequin.github.io/minidragonfly/exceptions.txt"
 

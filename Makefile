@@ -9,22 +9,20 @@ SUFFIX  =
 OBJS	= 	$(COMMON) $(addsuffix .o, $(TOOLS))
 CFLAGS	= 	-DPCRE_STATIC -DHAVE_STDINT -DNDEBUG
 
-GIT_VERSION := $(shell git describe --dirty --always)
+GIT_VERSION := $(shell git describe --dirty --always --abbrev=0)
+
+
 
 ifeq ($(OS),Windows_NT)
 	SUFFIX = .exe
 	LDLIBS += -lws2_32 -lgdi32 -lcrypt32
-	CFLAGS += -D_WIN32 -DNO_CGI -DNO_SSL_DL
+	CFLAGS += -D_WIN32 -DNO_CGI -DNO_SSL_DL -DGIT_VERSION=\"$(GIT_VERSION)\"
 else
 	
 endif
 
-all: version $(TOOLS)
+all: $(TOOLS)
 
-version:
-	@echo $(GIT_VERSION)
-	@git rev-parse HEAD | awk ' BEGIN {print "#include \"version.h\""} {print "const char * build_git_sha = \"" $$0"\";"} END {}' > version.c
-	@date | awk 'BEGIN {} {print "const char * build_git_time = \""$$0"\";"} END {} ' >> version.c
 	
 $(TOOLS): %: %.o $(COMMON) $(DEPS)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@$(SUFFIX) $< $(COMMON) $(LDLIBS)	

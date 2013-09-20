@@ -1,3 +1,9 @@
 #include "version.h"
-const char * build_git_sha = "93454fcc3df64b08a7e79d4d655c9b4a982ca9ac";
-const char * build_git_time = "Thu Sep 19 12:33:19 GMT 2013";
+
+#ifdef GIT_VERSION
+const char * build_git_sha =  GIT_VERSION;
+#else
+const char * build_git_sha = "no-version information";
+#endif
+
+const char * build_git_time = __DATE__ " - " __TIME__;

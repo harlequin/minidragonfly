@@ -353,10 +353,10 @@
 				<!--<p class="muted credit">Example courtesy <a href="http://martinbean.co.uk">Martin Bean</a> and <a href="http://ryanfait.com/sticky-footer/">Ryan Fait</a>.</p>-->
 				<p class="muted credit center">
 				<small>Code licensed under <a href="http://opensource.org/licenses/mit-license.html">MIT License</a></small>
-				<!--
-				<br><small id="lblVersion">Version:</small>
-				<br><small id="lblHash">Hash:</small>
-				-->
+				
+				<br><small>Version: <a href="#" id="label-version"></a></small>
+				<br><small>Hash: <a href="#" id="label-hash"></a></small>
+				
 				<hr>
 				<a href="https://github.com/harlequin/minidragonfly">
 				<i class="icon-github icon-3x"></i>
@@ -407,6 +407,10 @@
 				}
 			});
 		});
+		
+		
+		
+		
 		
 		
 		
@@ -474,7 +478,7 @@ var RPC = (new function($)
 							{	
 								//console.log(xhr.responseText);							
 								result = JSON.parse(xhr.responseText);
-								//console.log(result);
+								console.log(result);
 							}
 							catch (e)
 							{
@@ -491,7 +495,7 @@ var RPC = (new function($)
 								
 									res = result.data;
 									if(completed_callback)
-										completed_callback(res);									
+										completed_callback(res, result.version, result.hash);									
 									return;
 								}
 								else
@@ -535,6 +539,14 @@ var RPC = (new function($)
 	}
 	}(jQuery));
 	
+	
+		RPC.call("version", [], loaded);		
+	
+		function loaded(items, version, hash) {
+			$('#label-version').text(version);		
+			$('#label-hash').text(hash);		
+			console.log(version);
+		}	
 	
 	
 	

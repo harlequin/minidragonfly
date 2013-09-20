@@ -199,8 +199,8 @@ static int init(int argc, char ** argv) {
 static void print_version () {
 	DPRINTF(E_WARN, L_GENERAL, "Starting " APPLICATION_NAME " version " MINIDRAGONFLY_VERSION "\n", "");
 	DPRINTF(E_WARN, L_GENERAL, "** Development version\n", "");
-	//DPRINTF(E_WARN, L_GENERAL, "**   %s\n", build_git_sha);
-	//DPRINTF(E_WARN, L_GENERAL, "**   %s\n", build_git_time);
+	DPRINTF(E_WARN, L_GENERAL, "**   %s\n", build_git_sha);
+	DPRINTF(E_WARN, L_GENERAL, "**   %s\n", build_git_time);
 	//DPRINTF(E_WARN, L_GENERAL, "**   sqlite version %s\n", sqlite3_libversion());
 	//DPRINTF(E_WARN, L_GENERAL, "**   mongoose version %s\n", mg_version());
 }
@@ -371,6 +371,9 @@ static struct mg_context *start_webserver(void) {
 
 
 	set_option( opt, "ssl_certificate", options[OPT_SSL_CERTIFCATE] );
+
+
+
 	//set_option( options, "authentication_domain", "miniscan.com");
 	//set_option( options, "protect_uri","/*");
 	//set_option( options, "global_auth_file", ".htpasswd");

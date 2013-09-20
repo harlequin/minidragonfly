@@ -1,3 +1,6 @@
+
+
+
 	$('#OpenSearchDialog').on('click', function(ev) {
 		$('#SearchShowDialog').modal().show();
 	});
@@ -503,10 +506,7 @@ var Frontend = (new function($)
 		
 		
 		ManualPostProcessDialog.init();
-		
-		RPC.call("version");
-		
-	}
+	}	
 });
 
 /*** START WEB-APPLICATION ***********************************************************/
