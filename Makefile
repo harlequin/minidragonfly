@@ -18,7 +18,7 @@ ifeq ($(OS),Windows_NT)
 	LDLIBS += -lws2_32 -lgdi32 -lcrypt32
 	CFLAGS += -D_WIN32 -DNO_CGI -DNO_SSL_DL -DGIT_VERSION=\"$(GIT_VERSION)\"
 else
-	
+	CFLAGS += -DGIT_VERSION=\"$(GIT_VERSION)\"
 endif
 
 all: $(TOOLS)
