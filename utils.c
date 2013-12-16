@@ -27,8 +27,6 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 
-//#include <io.h>
-
 #ifdef WIN32
 #include <io.h>
 #else
@@ -37,14 +35,12 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
-//#include <fcntl.h>
 #include <errno.h>
 #include <sqlite3.h>
 #include "mongoose.h"
 #include <json/json.h>
 
 #include <curl/curl.h>
-
 
 #include "utils.h"
 #include "log.h"
@@ -258,28 +254,15 @@ int download(const char *url, struct memory_struct *chunk) {
 					DPRINTF(E_INFO, L_GENERAL, "Download: %s\n", ebuf);
 					return -1;
 				} else {
-
 //					while ( (bytes_read = mg_read(conn, smallbuffer, 10)) > 0) {
 //						DPRINTF(E_INFO, L_GENERAL, "< %s\n", smallbuffer);
 //					}
 				}
-
-
 			}
-
-
-
-
-
-
-
-
 		} else {
 			//DPRINTF(E_INFO, L_GENERAL, "> %s\n", GetLastError());
 			return -1;
 		}
-
-
 //
 //			conn = mg_download( , proxy_port, 0, ebuf, ,
 //				"GET %s HTTP/1.1\r\n"
@@ -321,6 +304,61 @@ int download(const char *url, struct memory_struct *chunk) {
 }
 
 #endif
+
+
+
+//itunes
+void download_itunes_covers(int id) {
+	char **result;
+	int cols, rows;
+	int i;
+	char *sql;
+	char *search_url = "http://ax.itunes.apple.com/WebObjects/MZStoreServices.woa/wa/wsSearch?term=%s%%20Season%%20%s&media=tvShow&entity=tvSeason&attribute=tvSeasonTerm&country=us";
+	struct memory_struct *chunk;
+	char *uri;
+	json_object *obj;
+	array_list *list;
+	char *destination_path;
+	FILE *f;
+
+	chunk = malloc(sizeof(struct memory_struct));
+
+
+	sql = sqlite3_mprintf("SELECT DISTINCT tv_serie.title, tv_episode.season FROM tv_serie, tv_episode WHERE season > 0 AND tv_series_id = '%d' AND tv_serie.id = tv_episode.tv_series_id", id);
+	if ((sql_get_table(db, sql, &result, &rows, &cols) == SQLITE_OK) && rows) {
+		for (i = cols; i < rows * cols + cols; i += cols) {
+
+			uri = malloc(1024);
+			sprintf(uri, search_url, str_replace(result[i], " ", "%20") ,result[i+1]);
+			download(uri , chunk);
+
+			if(chunk->size > 0) {
+				obj = json_tokener_parse(chunk->memory);
+				if(obj) {
+					obj = json_object_object_get(obj, "results");
+					list = json_object_get_array(obj);
+					if(list->length > 0) {
+						obj = json_object_object_get(list->array[0], "artworkUrl100");
+
+						destination_path = malloc(255);
+						download(str_replace( json_object_get_string( obj ), "100x100", "200x200"), chunk);
+
+						sprintf(destination_path, "%s/%s/%d-%s.png", options[OPT_CACHE_DIR] , "itunes", id, result[i+1]);
+						DPRINTF(E_DEBUG, L_GENERAL, "==> TO fanart %s\n", destination_path);
+						if(chunk->size > 0 ) {
+							f = fopen(destination_path, "wb");
+							fwrite( chunk->memory, chunk->size ,1 ,f );
+							fclose(f);
+						} else {
+							DPRINTF(E_ERROR, L_GENERAL, "Can not download image!\n");
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 
 //hdclearart
 //tvthumb

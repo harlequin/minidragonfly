@@ -7,7 +7,7 @@ CC		=  gcc -g -fno-omit-frame-pointer
 LDLIBS  =   -lpcre -lsqlite3 -ljson -lpthread -ldl -lcurldll -lssl -lcrypto -lz
 SUFFIX  =	
 OBJS	= 	$(COMMON) $(addsuffix .o, $(TOOLS))
-CFLAGS	= 	 -DHAVE_STDINT -DNDEBUG -DPCRE_STATIC
+CFLAGS	= 	 -DHAVE_STDINT -DNDEBUG -DPCRE_STATIC -DHAVE_CURL
 GIT_VERSION := $(shell git describe --dirty --always --abbrev=0)
 
 

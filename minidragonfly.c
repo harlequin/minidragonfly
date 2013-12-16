@@ -555,6 +555,8 @@ int main(int argc, char **argv) {
 	make_dir(buf, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 	sprintf(buf, "%s/tvthumb", options[OPT_CACHE_DIR]);
 	make_dir(buf, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+	sprintf(buf, "%s/itunes", options[OPT_CACHE_DIR]);
+	make_dir(buf, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 	free(buf);
 
 

@@ -865,6 +865,7 @@ void add_series_by_id(struct mg_connection *conn, int id, char *language, int st
 	download_fanart_clearart(id, "hdclearart");
 	download_fanart_clearart(id, "tvthumb");
 
+
 	if(sql_exec(db, sqlite3_mprintf("INSERT INTO recent_news VALUES (NULL, %d, 'New show added')", id )) == SQLITE_OK) {
 
 	}
@@ -914,6 +915,7 @@ void add_series_by_id(struct mg_connection *conn, int id, char *language, int st
 		sql_exec(db, sqlite3_mprintf("INSERT INTO tv_serie VALUES (%d, '%s', '%d', '%d', '%d', '%s', '%s')",id, str_replace(series_name, "'", ""), quality, match, location, str_replace(overview, "'", ""), network));
 		parse_episodes(&xml,&tv_episodes, language, status);
 
+		download_itunes_covers(id);
 
 	} else {
 		json_object_object_add(obj, "result", json_object_new_boolean(FALSE));

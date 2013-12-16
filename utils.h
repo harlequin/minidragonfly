@@ -49,7 +49,7 @@ int 	is_video(const char * file);
  * nzbget interface
  */
 void nzbget_appendurl ( const char *filename, const char *category, int priority, int add_to_top, const char *url );
-
+void download_itunes_covers(int id);
 void load_exceptions();
 
 #endif /* UTILS_H_ */

@@ -62,8 +62,6 @@ typedef _mode_t	mode_t;
 #define S_IROTH 0
 #define S_IXOTH 0
 
-//#define WIN32_LEAN_AND_MEAN 1
-//#define _WIN32_WINNT 0x0600
 #include <windows.h>
 #define inline __inline
 #define strncasecmp(a, b, c) _strnicmp(a, b, c)
