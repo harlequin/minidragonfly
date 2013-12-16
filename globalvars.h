@@ -31,17 +31,23 @@
 #define EXCEPTIONS_SITE "http://harlequin.github.io/minidragonfly/exceptions.txt"
 
 #include <sqlite3.h>
+#include "types.h"
 
+#ifndef ARRAY_SIZE
+#define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
+#endif
 
 extern volatile short int quitting;
 extern char *db_path;
 extern sqlite3 *db;
+extern newznab_site_t *newznab_site;
 
-extern char *option_names[];
-extern char *minidragonfly_options[];
+//extern char *option_names[];
+//extern char *minidragonfly_options[];
 
-
+extern char *episode_status_names[];
 extern char *options[];
+extern int newznab_sites_counter;
 
 #define STATUS_WANTED 0
 #define STATUS_IGNORED 1

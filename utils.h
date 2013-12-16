@@ -33,7 +33,9 @@
 
 
 void *s_malloc(size_t size);
-
+#if !HAVE_STRNDUP
+char* strndup(const char* str, size_t n);
+#endif
 
 void 	strncpyt(char *dst, const char *src, size_t len);
 void 	download_fanart_clearart(int id, const char *type);

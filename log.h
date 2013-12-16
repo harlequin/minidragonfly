@@ -25,6 +25,8 @@
 #ifndef __ERR_H__
 #define __ERR_H__
 
+#include "queue.h"
+
 #define E_OFF		0
 #define E_FATAL     1
 #define E_ERROR		2

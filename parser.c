@@ -74,11 +74,6 @@ char *tvshow_regexes[] = {
 		"-(?P<release_group>[^- ]+))?)?$"             /*// Group */
 };
 
-char *nzb_sites[] = {
-		"http://nzbtv.net/",
-		/*"http://185.8.105.59:25991/index/www/"*/ "http://nzbs2go.com/",
-		/*"https://www.miatrix.com/"*/ "http://nzbs2go.com/"};
-
 quality_presets_names_t quality_presets_names[] = {
 		{QUALITY_PRESETS_SD, "SD"},
 		{QUALITY_PRESETS_HD, "HD"},
@@ -368,8 +363,8 @@ void showcmp(feed_item_t *feed_items, char *show_id) {
 
 	//DPRINTF(E_DEBUG, L_SCANNER, ">>> Start compare for show %s\n", show_id);
 
-	/*                                  0                     1                2                    3                 4                   5        */
-	query = sqlite3_mprintf("SELECT tv_episode.id, tv_episode.season, tv_episode.episode, tv_episode.language, tv_serie.quality, tv_episode.status FROM tv_episode, tv_serie WHERE tv_episode.tv_series_id = tv_serie.id AND tv_episode.tv_series_id = %s AND tv_episode.status = 1",	show_id);
+	/*                                  0                     1                2                    3                 4                   5              6 */
+	query = sqlite3_mprintf("SELECT tv_episode.id, tv_episode.season, tv_episode.episode, tv_episode.language, tv_serie.quality, tv_episode.status, tv_serie.id FROM tv_episode, tv_serie WHERE tv_episode.tv_series_id = tv_serie.id AND tv_episode.tv_series_id = %s AND tv_episode.status = 1",	show_id);
 
 	if ((sql_get_table(db, query, &result, &rows, &cols) == SQLITE_OK) && rows) {
 
@@ -411,31 +406,35 @@ void showcmp(feed_item_t *feed_items, char *show_id) {
 					DPRINTF(E_DEBUG, L_SCANNER, "Quality compare: [%d] and [%d] - \n", db_quality, qual);
 
 					if( (db_quality & qual) == qual) {
-						sql_exec(db, sqlite3_mprintf("UPDATE tv_episode SET status = 4, nzb = '%s' WHERE id = '%s'", item->title, result[i]));
+
+						//Todo: When the episode was set than make an update to the status
+						//otherwise it will be placed twice
+						sql_exec(db, sqlite3_mprintf("UPDATE tv_episode SET status = %d, nzb = '%s' WHERE id = '%s'", EPISODE_STATUS_SNATCHED, item->title, result[i]));
+
+						sql_exec(db, sqlite3_mprintf("INSERT INTO recent_news (tv_show_id, comment) VALUES ('%s', 'S%sE%s snatched')", result[i+6], result[i+1], result[i+2] ));
 
 
+						//Todo: implement full setting ... category, prio, clean name,
+						// direct method with link
+						//nzbget_appendurl(item->title, minidragonfly_options[CONF_NZBGET_CATEGORY], 0, 0, item->link);
 
-						if(strcmp(options[OPT_NZBGET_ACTIVE], "yes") ) {
-							//Todo: implement full setting ... category, prio, clean name,
-							//direct method with link
-							nzbget_appendurl(item->title, options[OPT_NZBGET_CATEGORY], 0, 0, item->link);
+						// another method can the black hole ...
+						chunk = malloc(sizeof (struct memory_struct));
+						download(item->link, chunk);
+						if(chunk->size > 0) {
+							nzb = malloc(255);
+							sprintf(nzb, "%s/%s.nzb", options[OPT_BLACK_HOLE_DIR], item->title);
+							f = fopen(nzb, "wb");
+
+							fwrite(chunk->memory, chunk->size, 1, f);
+
+							fclose(f);
+							free(nzb);
+							free(chunk->memory);
 						}
-
-						if(strcmp(options[OPT_BLACK_HOLE_ACTIVE], "yes") ) {
-							chunk = malloc(sizeof (struct memory_struct));
-							download(item->link, chunk);
-							if(chunk->size > 0) {
-								nzb = malloc(255);
-								sprintf(nzb, "%s/%s.nzb", options[OPT_BLACK_HOLE_DIR], item->title);
-								f = fopen(nzb, "wb");
-								fwrite(chunk->memory, chunk->size, 1, f);
-								fclose(f);
-								free(nzb);
-								free(chunk->memory);
-							}
-						}
-
-
+					} else {
+						/* put the other releases into database */
+						sql_exec(db, sqlite3_mprintf("INSERT INTO releases (tv_episode_id, name, link) VALUES ('%s', '%s', '%s')", result[i], item->title, item->link ));
 					}
 				}
 				item = item->next;
@@ -470,13 +469,13 @@ int fetch_feed_items(const char *tvshow_id) {
 	int offset;
 	int z;
 
-	char *key;
+
 	char *sql;//, *episode_query;
 	char *query_url;
 	char **result;
 	char *show_name;
 
-	key = malloc(64);
+
 	chunk = (struct memory_struct*) malloc(sizeof(struct memory_struct));
 	query_url = malloc(1024);
 	show_name = malloc(64);
@@ -534,34 +533,9 @@ int fetch_feed_items(const char *tvshow_id) {
 
 			DPRINTF(E_INFO, L_SCANNER, "> Searching %s episodes for tv show %s in %s language(s) %s\n", result[i + 1], show_name, result[i + 2], result[i + 3]);
 
-			for (site_counter = 0; site_counter < 3; site_counter++) {
-/*
-				//TODO: implement smaller timeout
-				//if(site_counter == 0)
-				//	continue;
-*/
-				if(site_counter==0 ||site_counter==2)
-					continue;
+			for (site_counter = 0; site_counter < newznab_sites_counter; site_counter++) {
 
-
-
-				DPRINTF(E_INFO, L_SCANNER, "> Download from site %s\n", nzb_sites[site_counter]);
-
-				key = malloc(64);				
-				//TODO: REIMPLEMENT
-//				switch (site_counter) {
-//					case 0:
-//						key = strdup(minidragonfly_options[CONF_SITE_NZBTV_KEY]);
-//						break;
-//					case 1:
-//						key = strdup(minidragonfly_options[CONF_SITE_NEWZNZB_KEY]);
-//						break;
-//					case 2:
-//						key = strdup(minidragonfly_options[CONF_SITE_MIATRIX_KEY]);
-//						break;
-//					default:
-//						break;
-//				}
+				DPRINTF(E_INFO, L_SCANNER, "> Download from site %s\n", newznab_site[site_counter].url);
 
 
 
@@ -578,17 +552,18 @@ int fetch_feed_items(const char *tvshow_id) {
 						//castle%20&&%20german%20%7C%7C%20videomann
 						//%%20&&%%20german%%20%%7C%%7C%%20videomann
 						*/
-						sprintf(query_url, "%sapi?apikey=%s&t=tvsearch&q=%s%s&o=json&offset=%d",nzb_sites[site_counter], key, str_replace(show_name, " ", "%20"), additional_lang_terms[1][z], offset);
+						sprintf(query_url, "%sapi?apikey=%s&t=tvsearch&q=%s%s&o=json&offset=%d",newznab_site[site_counter].url, newznab_site[site_counter].apikey, str_replace(show_name, " ", "%20"), additional_lang_terms[1][z], offset);
 
 						if(download(query_url, chunk) == -1)
 							break;
 
 						if (chunk->size > 0) {
 
+
+
 							DPRINTF(E_WARN, L_SCANNER, "> %s\n",query_url);
-							/*
-							//DPRINTF(E_DEBUG, L_GENERAL, ">>> %s\n", chunk->memory);
-*/
+							DPRINTF(E_DEBUG, L_GENERAL, ">>> %s\n", chunk->memory);
+
 							obj = json_tokener_parse(chunk->memory);
 							if( !is_error(obj) ) {
 								obj = json_object_object_get(obj, "channel");
@@ -619,27 +594,33 @@ int fetch_feed_items(const char *tvshow_id) {
 
 								list = json_object_get_array(obj);
 
-								for (j = 0; j < list->length; j++) {
-									feed_item = malloc(sizeof(feed_item_t));
+								if(list != NULL) {
 
-									feed_item->title = json_object_get_string(json_object_object_get(list->array[j],"title"));
-									feed_item->link = json_object_get_string(json_object_object_get(list->array[j],"link"));
+									for (j = 0; j < list->length; j++) {
+										feed_item = malloc(sizeof(feed_item_t));
 
-									if(feed_item->title == NULL)
-										continue;
+										feed_item->title = json_object_get_string(json_object_object_get(list->array[j],"title"));
+										feed_item->link = json_object_get_string(json_object_object_get(list->array[j],"link"));
 
-									episode = malloc(sizeof(parsed_episode_t));
-									if( (episode = parse_title(feed_item->title)) != NULL ) {
-										feed_item->parsed_episode = episode;
-										feed_item->next = head;
-										head = feed_item;
+										if(feed_item->title == NULL)
+											continue;
+
+										episode = malloc(sizeof(parsed_episode_t));
+										if( (episode = parse_title(feed_item->title)) != NULL ) {
+											feed_item->parsed_episode = episode;
+											feed_item->next = head;
+											head = feed_item;
+										}
 									}
+								} else {
+									DPRINTF(E_ERROR, L_SCANNER, "Can't get the array list from item list...\n", "");
 								}
 								/*
 								//show compare was here
 								 	*/
 							} else {
 								DPRINTF(E_WARN, L_SCANNER, "Response from server was not a json string ...\n", "");
+
 								break;
 							}
 						}
@@ -651,8 +632,6 @@ int fetch_feed_items(const char *tvshow_id) {
 
 				} /* END all special queries */
 				/* compare the list with wanted show in database */
-
-
 			}
 		}
 	}

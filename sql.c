@@ -271,8 +271,22 @@ db_upgrade(sqlite3 *db)
 			result = 3;
 	}
 
+	if( db_vers < 4) {
+		DPRINTF(E_WARN, L_DB_SQL, "Updating DB version to v%d.\n", 4);
+		ret = sql_exec(db, "CREATE TABLE releases (id INTEGER PRIMARY KEY AUTOINCREMENT, tv_episode_id NUMERIC, name TEXT, link TEXT)");
+		if ( ret != SQLITE_OK )
+			result = 4;
+	}
 
-	sql_exec(db, "PRAGMA user_version = 3");
+	if (db_vers < 5) {
+		DPRINTF(E_WARN, L_DB_SQL, "Updating DB version to v%d.\n", 5);
+		ret = sql_exec(db, "ALTER TABLE tv_episode ADD watched NUMERIC");
+		if ( ret != SQLITE_OK )
+			result = 5;
+	}
+
+
+	sql_exec(db, "PRAGMA user_version = 5");
 	return result;
 
 }

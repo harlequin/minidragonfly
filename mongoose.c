@@ -4687,7 +4687,13 @@ static int sslize(struct mg_connection *conn, SSL_CTX *s, int (*func)(SSL *)) {
 static const char *ssl_error(void) {
   unsigned long err;
   err = ERR_get_error();
-  return err == 0 ? "" : ERR_error_string(err, NULL);
+
+  if(err == 0)
+	  return "";
+  else
+	  return (const char*) ERR_error_string(err, NULL);
+
+  //return err == 0 ? "" : ERR_error_string(err, NULL);
 }
 
 static void ssl_locking_callback(int mode, int mutex_num, const char *file,

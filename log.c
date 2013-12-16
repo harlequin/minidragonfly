@@ -30,7 +30,10 @@
 #include <time.h>
 #include <stdarg.h>
 
+#include "queue.h"
 #include "log.h"
+
+
 
 
 
@@ -52,12 +55,12 @@ char *facility_name[] = {
 };
 
 char *level_name[] = {
-	"OFF",					/* E_OFF */
-	"FATAL",				/* E_FATAL */
-	"ERROR",				/* E_ERROR */
-	"WARNING",				/* E_WARN -- warn */
-	"INFO",					/* E_INFO */
-	"DEBUG",				/* E_DEBUG */
+	"off",					/* E_OFF */
+	"fatal",				/* E_FATAL */
+	"error",				/* E_ERROR */
+	"warning",				/* E_WARN -- warn */
+	"info",					/* E_INFO */
+	"debug",				/* E_DEBUG */
 	0
 };
 
@@ -80,11 +83,11 @@ int asprintf( char **sptr, char *fmt, ... ) {
 }
 
 
-
 int log_init(const char *fname, const char *debug) {
 	int i;
 	FILE *fp;
 	short int log_level_set[L_MAX];
+
 
 	if (debug)	{
 		const char *rhs, *lhs, *nlhs, *p;
@@ -143,14 +146,18 @@ int log_init(const char *fname, const char *debug) {
 	return 0;
 }
 
+
+unsigned int log_items_size = 0;
+
+
 void log_err(int level, enum _log_facility facility, char *fname, int lineno, char *fmt, ...) {
 	
 	char * errbuf;
 	va_list ap;
-	/*
-	//time_t t;
-	//struct tm *tm;
-	 */
+
+	time_t t;
+	struct tm *tm;
+
 	if (level && level>log_level[facility] && level>E_FATAL)
 		return;
 
@@ -172,21 +179,27 @@ void log_err(int level, enum _log_facility facility, char *fname, int lineno, ch
 	}
 	
 	va_end(ap);
+
+	t = time(NULL);
+		tm = localtime(&t);
+
+
 /*
 	// timestamp
-	//t = time(NULL);
-	//tm = localtime(&t);
 
 
-	//fprintf(log_fp, "[%04d/%02d/%02d %02d:%02d:%02d] ",
-	//        tm->tm_year+1900, tm->tm_mon+1, tm->tm_mday,
-	//        tm->tm_hour, tm->tm_min, tm->tm_sec);
+
 
 //	if (level)
 //		fprintf(log_fp, "%s:%d: %s: %s", fname, lineno, level_name[level], errbuf);
 //	else
 //		fprintf(log_fp, "%s:%d: %s", fname, lineno, errbuf);
 */
+
+	fprintf(stdout, "[%04d/%02d/%02d %02d:%02d:%02d] ",
+		        tm->tm_year+1900, tm->tm_mon+1, tm->tm_mday,
+		        tm->tm_hour, tm->tm_min, tm->tm_sec);
+
 	if (level)
 		fprintf(stdout /*log_fp*/, "[%s] %s:%d: %s", level_name[level], fname, lineno, errbuf);
 	else

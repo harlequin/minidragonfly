@@ -25,7 +25,7 @@
 #define CONFIG_H_
 
 #define APPLICATION_NAME "minidragonfly"
-#define DB_VERSION 3
+#define DB_VERSION 5
 
 /*Special Visual Studio fixes */
 #ifdef _MSC_VER
@@ -62,8 +62,8 @@ typedef _mode_t	mode_t;
 #define S_IROTH 0
 #define S_IXOTH 0
 
-#define WIN32_LEAN_AND_MEAN 1
-#define _WIN32_WINNT 0x0600
+//#define WIN32_LEAN_AND_MEAN 1
+//#define _WIN32_WINNT 0x0600
 #include <windows.h>
 #define inline __inline
 #define strncasecmp(a, b, c) _strnicmp(a, b, c)

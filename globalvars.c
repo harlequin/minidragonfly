@@ -27,12 +27,43 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-
+#include <assert.h>
 #include "globalvars.h"
 #include "log.h"
+#include "types.h"
 
 volatile short int quitting = 0;
 sqlite3 *db;
+
+
+newznab_site_t *newznab_site;
+int newznab_sites_counter = 0;
+
+void set_newznab_site(int index, const char* item, char* value) {
+	if( index > (newznab_sites_counter - 1 ) ) {
+		newznab_site = realloc( newznab_site, ++newznab_sites_counter * sizeof(newznab_site_t) );
+	}
+
+	if(strcmp(item, "active") == 0) {
+		newznab_site[index].active = value;
+	} else if(strcmp(item , "url") == 0) {
+		newznab_site[index].url = value;
+	} else if(strcmp(item , "apikey") == 0) {
+		newznab_site[index].apikey = value;
+	} else {
+		printf("Unknown option ...\n");
+		exit(-1);
+	}
+}
+
+
+char *episode_status_names[] = {
+		"Skipped",
+		"Wanted",
+		"Archived",
+		"Ignored",
+		"Snatched"
+};
 
 
 char *options[] = {
@@ -92,6 +123,53 @@ void trim_blanks (char *s)  {
     return;
 }
 
+char** str_split(char* a_str, const char a_delim)
+{
+    char** result    = 0;
+    size_t count     = 0;
+    char* tmp        = a_str;
+    char* last_comma = 0;
+
+    /* Count how many elements will be extracted. */
+    while (*tmp)
+    {
+        if ( a_delim == *tmp)
+        {
+            count++;
+            last_comma = tmp;
+        }
+        tmp++;
+    }
+
+    //printf("%d\n", count);
+
+    /* Add space for trailing token. */
+    count += last_comma < (a_str + strlen(a_str) - 1);
+
+    /* Add space for terminating null string so caller
+       knows where the list of returned strings ends. */
+    count++;
+
+    result =(char**) s_malloc(sizeof(char*) * count);
+
+    if (result)
+    {
+        size_t idx  = 0;
+        char* token = strtok(a_str, "_");
+
+        while (token)
+        {
+            assert(idx < count);
+            *(result + idx++) = strdup(token);
+            token = strtok(0, "_");
+        }
+        assert(idx == count - 1);
+        //printf("> %d\n", idx);
+        *(result + idx) = 0;
+    }
+
+    return result;
+}
 
 char *read_config_file(const char *config, char **options /*char **opt_name, char **opt_val*/ ) {
 	FILE *f;
@@ -99,6 +177,18 @@ char *read_config_file(const char *config, char **options /*char **opt_name, cha
 	char line[1024];
 	char *c;
 	int i;
+
+	int j;
+	char *buffer;
+	char *item;
+	char *index;
+
+	char **tokens;
+
+
+	buffer =(char*) s_malloc(64);
+	item =(char*) s_malloc(64);
+	index =(char*) s_malloc(3);
 
 	f = fopen(config, "r");
 	if(!f)
@@ -119,6 +209,17 @@ char *read_config_file(const char *config, char **options /*char **opt_name, cha
 
 			if (options[i]) {
 				options[i + 1]=strdup(c);
+			}
+
+			if(starts_with( "newznab_", line )) {
+
+				tokens = str_split(line, '_');
+				if(tokens) {
+					// 0      1   2
+					//newznab_0_active
+					set_newznab_site( atoi( *(tokens + 1) ), *(tokens + 2), strdup(c));
+				}
+				free(tokens);
 			}
 		}
 	}

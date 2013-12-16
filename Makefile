@@ -1,19 +1,13 @@
-# -DHAVE_BACKTRACE
-# -DHAVE_FORK
-
-
 TOOLS	=	minidragonfly 
 
 COMMON	=	globalvars.o log.o minixml.o parser.o rpc.o sql.o utils.o url_parser.o processor.o mongoose.o version.o
 DEPS	=	Makefile globalvars.h log.h minixml.h parser.h queue.h rpc.h sql.h types.h utils.h version.h url_parser.h mongoose.h processor.h 
 
-CC		=  gcc -g
-LDLIBS  =   -lpcre -lsqlite3 -ljson -lpthread
-# -lssl -lcrypto
+CC		=  gcc -g -fno-omit-frame-pointer
+LDLIBS  =   -lpcre -lsqlite3 -ljson -lpthread -ldl -lcurldll -lssl -lcrypto -lz
 SUFFIX  =	
 OBJS	= 	$(COMMON) $(addsuffix .o, $(TOOLS))
-CFLAGS	= 	 -DHAVE_STDINT -DNDEBUG
-# -DPCRE_STATIC
+CFLAGS	= 	 -DHAVE_STDINT -DNDEBUG -DPCRE_STATIC
 GIT_VERSION := $(shell git describe --dirty --always --abbrev=0)
 
 

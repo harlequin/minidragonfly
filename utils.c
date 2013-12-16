@@ -43,6 +43,9 @@
 #include "mongoose.h"
 #include <json/json.h>
 
+#include <curl/curl.h>
+
+
 #include "utils.h"
 #include "log.h"
 #include "sql.h"
@@ -55,12 +58,34 @@
 #include "config.h"
 
 
+#if !HAVE_STRNDUP
+/* CAW: compliant version of strndup() */
+char* strndup(const char* str, size_t n)
+{
+  if(str) {
+    size_t len = strlen(str);
+    size_t nn = json_min(len,n);
+    char* s = (char*)malloc(sizeof(char) * (nn + 1));
+
+    if(s) {
+      memcpy(s, str, nn);
+      s[nn] = '\0';
+    }
+
+    return s;
+  }
+
+  return NULL;
+}
+#endif
+
+
 void *s_malloc(size_t size) {
 	void *res;
 
 	res = malloc(size);
 	if(!res) {
-		DPRINTF(E_FATAL, L_GENERAL, "Can't allocate %zu bytes!\n", size);
+		DPRINTF(E_FATAL, L_GENERAL, "Can't allocate %d bytes!\n", size);
 	}
 	memset(res, 0, size);
 	return res;
@@ -76,10 +101,76 @@ strncpyt(char *dst, const char *src, size_t len)
 	dst[len-1] = '\0';
 }
 
+#if HAVE_CURL
+static size_t write_memory_callback(void *contents, size_t size, size_t nmemb, void *userp) {
+  size_t realsize = size * nmemb;
+  struct memory_struct *mem = (struct memory_struct *)userp;
+
+  mem->memory = realloc(mem->memory, mem->size + realsize + 1);
+  if(mem->memory == NULL) {
+    printf("not enough memory (realloc returned NULL)\n");
+    return 0;
+  }
+
+  memcpy(&(mem->memory[mem->size]), contents, realsize);
+  mem->size += realsize;
+  mem->memory[mem->size] = 0;
+
+  return realsize;
+}
+
+
+
+int download(const char *url, struct memory_struct *chunk) {
+	 CURL *curl_handle;
+	 CURLcode res;
+	 char *proxy;
+
+	 proxy = malloc(255);
+
+	 chunk->memory = malloc(1);
+	 chunk->size = 0;
+
+	 curl_global_init(CURL_GLOBAL_ALL);
+
+	 curl_handle = curl_easy_init();
+	 curl_easy_setopt(curl_handle, CURLOPT_URL, url);
+	 curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, write_memory_callback);
+	 curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, chunk);
+	 curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, "libcurl-agent/1.0");
+	 curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, 0);
+
+
+	 proxy = getenv("HTTP_PROXY");
+	 if(proxy)
+		 curl_easy_setopt(curl_handle, CURLOPT_PROXY, "iwebalfde-1.tgn.trw.com:80");
+
+	 res = curl_easy_perform(curl_handle);
+
+	 if(res != CURLE_OK) {
+		 DPRINTF(E_DEBUG, L_GENERAL, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+	 }
+	 else {
+		DPRINTF(E_DEBUG, L_GENERAL, "%lu bytes retrieved\n", (long)chunk->size);
+	 }
+
+	 curl_easy_cleanup(curl_handle);
+
+	 //if(chunk.memory)
+	 //   free(chunk.memory);
+
+	 curl_global_cleanup();
+
+	 return 0;
+}
+
+#else
+
 int download(const char *url, struct memory_struct *chunk) {
 	char ebuf[100];
 	char buffer[255];
 
+	char smallbuffer[10];
 	//char bigbuffer[2048];
 
 	int bytes_read;
@@ -118,7 +209,9 @@ int download(const char *url, struct memory_struct *chunk) {
 		port = atoi(uri->port);
 
 
-	DPRINTF(E_INFO, L_GENERAL, "Try to connect %s:%d via proxy\n", uri->host, port);
+
+	DPRINTF(E_INFO, L_GENERAL, ">> %s\n", url);
+
 
 	proxy = getenv("HTTP_PROXY");
 	if( proxy != NULL ) {
@@ -130,17 +223,79 @@ int download(const char *url, struct memory_struct *chunk) {
 		if(proxy_uri->port != NULL)
 			proxy_port = atoi(proxy_uri->port);
 
-		DPRINTF(E_INFO, L_GENERAL, "Proxy %s:%d \n", proxy_uri->host, proxy_port);
 
-		conn = mg_download( proxy_uri->host, proxy_port, 0, ebuf, sizeof(ebuf), "CONNECT %s:%d HTTP/1.0\r\nHost: %s:%d\r\n\r\n", uri->host, port, uri->host, port);
-		request = mg_get_request_info(conn);
-		conn = mg_download( proxy_uri->host, proxy_port, 0, ebuf, sizeof(ebuf), "GET %s HTTP/1.0\r\nHost: %s:%d\r\n\r\n", url, uri->host, port );
+		DPRINTF(E_INFO, L_GENERAL, ">> Try to connect %s:%d via proxy\n", uri->host, port);
+		DPRINTF(E_INFO, L_GENERAL, ">> Proxy %s:%d \n", proxy_uri->host, proxy_port);
+
+
+		ebuf[0] = '\0';
+		conn = (struct mg_connection*) mg_connect(proxy_uri->host, 80, 0, ebuf, sizeof(ebuf));
+		if (conn) {
+			DPRINTF(E_INFO, L_GENERAL, ">>>: CONNECT %s:%d HTTP/1.1\r\nHost: %s:%d\r\n\r\n", uri->host, port, uri->host, port);
+			if( mg_printf(conn, "CONNECT %s:%d HTTP/1.1\r\nHost: %s:%d\r\n\r\n", uri->host, port, uri->host, port) <= 0 ) {
+				//DPRINTF(E_INFO, L_GENERAL, "Download: %s %s\n", ebuf, GetLastError());
+				return -1;
+			} else {
+
+
+				char response[1024];
+				char c[1];
+				strcpy(response, "");
+				while ( (bytes_read = mg_read(conn, c, 1)) > 0) {
+					strcat(response, c);
+
+
+					DPRINTF(E_INFO, L_GENERAL, "<< %s\n", response);
+					if(strcmp(c, "\r") == 0)
+						break;
+				}
+
+
+
+				DPRINTF(E_INFO, L_GENERAL, ">> NOW SEND REQUEST\n","");
+				DPRINTF(E_INFO, L_GENERAL, ">>>: GET %s HTTP/1.0\r\nHost: %s\r\n\r\n", url, uri->host);
+				if( mg_printf(conn, "GET %s HTTP/1.0\r\nHost: %s\r\n\r\n", url, uri->host) <= 0 ) {
+					DPRINTF(E_INFO, L_GENERAL, "Download: %s\n", ebuf);
+					return -1;
+				} else {
+
+//					while ( (bytes_read = mg_read(conn, smallbuffer, 10)) > 0) {
+//						DPRINTF(E_INFO, L_GENERAL, "< %s\n", smallbuffer);
+//					}
+				}
+
+
+			}
+
+
+
+
+
+
+
+
+		} else {
+			//DPRINTF(E_INFO, L_GENERAL, "> %s\n", GetLastError());
+			return -1;
+		}
+
+
+//
+//			conn = mg_download( , proxy_port, 0, ebuf, ,
+//				"GET %s HTTP/1.1\r\n"
+//				"User-Agent: curl/7.29.0\r\n"
+//				"Host: %s\r\n"
+//				"Accept: */*\r\n"
+//				"Proxy-Connection: Keep-Alive\r\n\r\n",
+//				url, uri->host
+//			);
+
 	} else {
 		DPRINTF(E_INFO, L_GENERAL, "Download from %s on port %d\n", uri->host, port);
 		conn = mg_download(uri->host, port, use_ssl, ebuf, sizeof(ebuf), "GET %s HTTP/1.0\r\nHost: %s:%d\r\n\r\n", url, uri->host, port );
 	}
 
-	request = mg_get_request_info(conn);
+	//request = mg_get_request_info(conn);
 
 	if(NULL == conn) {
 		DPRINTF(E_ERROR, L_GENERAL, "Connection closed [%s]\n", ebuf);
@@ -165,6 +320,7 @@ int download(const char *url, struct memory_struct *chunk) {
 	return 0;
 }
 
+#endif
 
 //hdclearart
 //tvthumb
@@ -243,9 +399,9 @@ void download_fanart_clearart(int id, const char *type) {
 
 int create_database(sqlite3 *db) {
 	char *tv_episodes_table = "CREATE TABLE " \
-			"tv_episode(id INTEGER PRIMARY KEY, tv_series_id NUMERIC, season NUMERIC, episode NUMERIC, title TEXT COLLATE NOCASE, status NUMERIC, language TEXT, nzb TEXT, snatched_quality NUMERIC, location TEXT)";
+			"tv_episode(id INTEGER PRIMARY KEY, tv_series_id NUMERIC, season NUMERIC, episode NUMERIC, title TEXT COLLATE NOCASE, status NUMERIC, language TEXT, nzb TEXT, snatched_quality NUMERIC, location TEXT, watched NUMERIC)";
 
-	char *tv_serie_table = "CREATE TABLE tv_serie(id NUMERIC, title TEXT COLLATE NOCASE, quality NUMERIC, match NUMERIC, location TEXT, overview TEXT)";
+	char *tv_serie_table = "CREATE TABLE tv_serie(id NUMERIC, title TEXT COLLATE NOCASE, quality NUMERIC, match NUMERIC, location TEXT, overview TEXT, network TEXT)";
 
 	char *cache_table = "CREATE TABLE cache(tv_series_id NUMERIC, subject TEXT, id NUMERIC, groupid NUMERIC)";
 
@@ -257,6 +413,8 @@ int create_database(sqlite3 *db) {
 
 	char *exception_table = "CREATE TABLE exception (id INTEGER PRIMARY KEY AUTOINCREMENT, tvdb_id NUMERIC, name TEXT COLLATE NOCASE)";
 
+	char *releases_table = "CREATE TABLE releases (id INTEGER PRIMARY KEY AUTOINCREMENT, tv_episode_id NUMERIC, name TEXT, link TEXT)";
+
 	sql_exec(db, tv_episodes_table);
 	sql_exec(db, tv_serie_table);
 	sql_exec(db, cache_table);
@@ -264,7 +422,8 @@ int create_database(sqlite3 *db) {
 	sql_exec(db, recent_news_table);
 	sql_exec(db, scene_names_table);
 	sql_exec(db, exception_table);
-	sql_exec(db, "pragma user_version = 3;");
+	sql_exec(db, releases_table);
+	sql_exec(db, "pragma user_version = 5;");
 	return 0;
 }
 
@@ -415,8 +574,7 @@ void nzbget_appendurl ( const char *filename, const char *category, int priority
 	base64auth = malloc(255);
 	post_data = malloc( size );
 
-	strcpy(auth, options[OPT_NZBGET_USER]);
-	strcat(auth, ":");
+	strcpy(auth, "nzbget:");
 	strcat(auth, options[OPT_NZBGET_PASSWORD]);
 
 	base64_encode( (unsigned char*) auth, strlen(auth), base64auth);
@@ -530,6 +688,7 @@ void load_exceptions() {
 		fclose(f);
 	}
 
+	DPRINTF(E_INFO, L_GENERAL, "Download exceptions from %s.\n", EXCEPTIONS_SITE);
 	chunk = malloc(sizeof(struct memory_struct));
 
 	download(EXCEPTIONS_SITE, chunk);
@@ -548,14 +707,13 @@ void load_exceptions() {
 
 	DPRINTF(E_INFO, L_GENERAL, "Loaded %d exceptions into database.\n", exception_counter);
 
-
-
 	chunk = malloc(sizeof(struct memory_struct));
 	download("https://api.github.com/repos/harlequin/minidragonfly/compare/5df40aa24d5d805431903b0b2473d9f5ddaccf54...master", chunk);
 	if(chunk->size > 0) {
 		DPRINTF(E_INFO, L_GENERAL, "data: %s\n", chunk->memory);
-
 	}
+
+
 }
 //"ahead_by": 4,
 //"behind_by": 0,

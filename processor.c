@@ -107,6 +107,8 @@ int processor ( const char *data ) {
 
 		while ((dent = readdir(dir))) {
 
+			LOG(E_DEBUG, "File: %s\n", dent->d_name);
+
 			if( !strcmp(dent->d_name, ".") || !strcmp(dent->d_name, ".."))
 				continue;
 
@@ -143,7 +145,7 @@ char *path_escape_chars[] = {
 	"*", "?", "\"", "<", ">", "|"
 };
 
-#define ARRAY_SIZE(x)  (sizeof(x) / sizeof(x[0]))
+//#define ARRAY_SIZE(x)  (sizeof(x) / sizeof(x[0]))
 
 void move_episode(char *tv_name, char *ep_name, parsed_episode_t *episode, char *str) {
 
@@ -241,6 +243,9 @@ void addtitle( parsed_episode_t *episode, int id, char *location ) {
 	int quality = 0;
 
 	LOG(E_DEBUG, "Adding '%s' to database\n", location);
+	LOG(E_DEBUG, "=> id      '%d'\n", id);
+	LOG(E_DEBUG, "=> season  '%s'\n", episode->season_num);
+	LOG(E_DEBUG, "=> episode '%s'\n", episode->ep_num);
 
 	sql = sqlite3_mprintf("SELECT tv_episode.id, tv_serie.title, tv_episode.title, tv_episode.snatched_quality FROM tv_episode, tv_serie WHERE tv_episode.tv_series_id = tv_serie.id AND tv_episode.tv_series_id = %d AND tv_episode.season = %d AND tv_episode.episode = %d", id, atoi(episode->season_num), atoi(episode->ep_num));
 	if( (sql_get_table(db, sql, &result, &rows, &cols) == SQLITE_OK) && rows ) {

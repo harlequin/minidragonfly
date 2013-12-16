@@ -32,6 +32,13 @@
 #include "config.h"
 
 
+typedef struct newznab_site_struct {
+	unsigned char *valid;
+	unsigned char *active;
+	char *url;
+	char *apikey;
+} newznab_site_t;
+
 struct memory_struct
 {
 	char *memory;

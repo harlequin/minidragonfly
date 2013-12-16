@@ -50,6 +50,12 @@
 #endif
 
 
+
+#include <time.h>
+#include <pthread.h>
+
+
+
 #include "log.h"
 #include "globalvars.h"
 #include "sql.h"
@@ -75,8 +81,7 @@ char *processor_location;
 unsigned int daemonize = 0;
 
 
-void print_backtrace()
-{
+void print_backtrace() {
 #ifdef HAVE_BACKTRACE
 	printf("Segmentation fault, tracing...\n");
 	
@@ -105,7 +110,10 @@ void print_backtrace()
 
 	free(strings);
 #else
-	printf("Segmentation fault");
+
+
+
+	printf("Segmentation fault %s\n", __FUNCTION__);
 #endif
 }
 
@@ -166,7 +174,7 @@ void signal_handler(int sig) {
 static int init(int argc, char ** argv) {
 
 #ifdef WIN32
-	//SetUnhandledExceptionFilter(unhandled_handler);
+	SetUnhandledExceptionFilter(unhandled_handler);
 	SetConsoleCtrlHandler(&run_shutdown_win, TRUE);
 #else
 	
@@ -185,12 +193,7 @@ static int init(int argc, char ** argv) {
 				"Failed to ignore SIGPIPE signals. EXITING.\n");
 	}	
 
-        signal(SIGSEGV, signal_handler);
-
-        
-
-
-
+    signal(SIGSEGV, signal_handler);
 
 #endif
 	return 0;
@@ -272,12 +275,12 @@ void command_line_processing(int argc, char **argv) {
 				exit(0);
 
 			case 'p':
-				processor_location = malloc(MAX_PATH);
+				processor_location = s_malloc(MAX_PATH);
 				strncpyt(processor_location, argv[++i], MAX_PATH);
 				break;
 
 			case 'c':
-				configuration_file = malloc(MAX_PATH);
+				configuration_file = s_malloc(MAX_PATH);
 				strncpyt(configuration_file, argv[++i], MAX_PATH);
 				break;
 
@@ -331,7 +334,7 @@ int log_message_callback(const struct mg_connection *conn, const char *message) 
 
 static char *sdup(const char *str) {
   char *p;
-  if ((p = (char *) malloc(strlen(str) + 1)) != NULL) {
+  if ((p = (char *) s_malloc(strlen(str) + 1)) != NULL) {
     strcpy(p, str);
   }
   return p;
@@ -357,32 +360,46 @@ static struct mg_context *start_webserver(void) {
 	char **opt;
 	int i;
 
-	opt = malloc(MAX_CONFIG);
-	url_rewrite = malloc(255);
+	opt = s_malloc(MAX_CONFIG);
+	url_rewrite = s_malloc(255);
 	sprintf(url_rewrite, "/cache=%s", options[OPT_CACHE_DIR]);
 
 	opt[0] = NULL;
 
 	DPRINTF(E_DEBUG, L_GENERAL, "Document root: %s\n", options[OPT_WEB_DIR]);
 
+
+	 //mg_modify_passwords_file(".htpasswd", "syknet.com",options[OPT_CONTROL_USER], options[OPT_CONTROL_PASSWORD]);
+	 //set_option( opt, "protect_uri","/*");
+	 //set_option( opt, "authentication_domain", "syknet.com");
+	 //set_option( opt, "global_auth_file", ".htpasswd");
+
 	set_option( opt, "document_root", options[OPT_WEB_DIR] );
 	set_option( opt, "listening_ports", options[OPT_CONTROL_PORT] );
 	set_option( opt, "url_rewrite_patterns", url_rewrite);
+	//set_option( opt, "ssl_certificate", options[OPT_SSL_CERTIFCATE] );
 
 
-	set_option( opt, "ssl_certificate", options[OPT_SSL_CERTIFCATE] );
+	set_option( opt, "num_threads", "5" );
+	//set_option( opt, "request_timeout_ms", "3000" );
 
 
+
+//	"", "50",
+//	  "run_as_user", NULL,
+//	  "url_rewrite_patterns", NULL,
+//	  "hide_files_patterns", NULL,
+//	  "", "30000",
 
 	//set_option( options, "authentication_domain", "miniscan.com");
-	//set_option( options, "protect_uri","/*");
-	//set_option( options, "global_auth_file", ".htpasswd");
+	//
+	//
 
 	memset(&callbacks, 0, sizeof(callbacks));
 	callbacks.begin_request = begin_request_handler;
 	callbacks.log_message = log_message_callback;
 
-	//mg_modify_passwords_file( ".htpasswd", "mydomain.com", "root", "root" );
+
 
 	context = mg_start(&callbacks, NULL,(const char **) opt);
 
@@ -399,6 +416,26 @@ void make_segfault() {
 	strcpy(N, "");
 }
 #endif
+
+
+
+static void *timer_callback(void * arg) {
+	int sleep_value = 1 * 60 * 1000000;
+
+	pthread_detach( pthread_self() ) ;
+
+
+
+	/* endless loop */
+	for(;;) {
+		DPRINTF(E_INFO, L_GENERAL, "Timer call back was here ...\n", "");
+		usleep( sleep_value );
+	}
+
+
+
+	pthread_testcancel( ) ;
+}
 
 
 int main(int argc, char **argv) {
@@ -454,7 +491,7 @@ int main(int argc, char **argv) {
 	 * > minidragonfly.conf
 	 */
 	if(!configuration_file) {
-		buf = malloc(MAX_PATH);
+		buf = s_malloc(MAX_PATH);
 		for ( i = 0; conf_locations[i] != NULL; i++) {
 			strncpyt( buf , conf_locations[i], strlen(conf_locations[i]) + 1);
 			printf(">> %s\n", buf);
@@ -490,6 +527,14 @@ int main(int argc, char **argv) {
 
 
 
+#undef MAKE_SEGFAULT
+#if	MAKE_SEGFAULT
+	DPRINTF(E_WARN, L_GENERAL, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n", "");
+	DPRINTF(E_WARN, L_GENERAL, "!! ATTENTION ... MAKE SEGFAULT IS ACTIVE !!\n", "");
+	DPRINTF(E_WARN, L_GENERAL, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n", "");
+#endif
+
+
 	//sanity check for config file
 	/* check for tvdbapi key */
 	if(strlen(options[OPT_TVDB_APIKEY]) == 0) {
@@ -505,7 +550,7 @@ int main(int argc, char **argv) {
 
 	//TODO REIMPLEMENT THIS MKDIR
 	make_dir(options[OPT_CACHE_DIR], S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-	buf = malloc(255);
+	buf = s_malloc(255);
 	sprintf(buf, "%s/hdclearart", options[OPT_CACHE_DIR]);
 	make_dir(buf, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 	sprintf(buf, "%s/tvthumb", options[OPT_CACHE_DIR]);
@@ -548,8 +593,9 @@ int main(int argc, char **argv) {
 	}
 
 
+
 	DPRINTF(E_DEBUG, L_GENERAL, "Start to download exceptions.conf.\n","");
-	load_exceptions();
+	//load_exceptions();
 	DPRINTF(E_DEBUG, L_GENERAL, "exceptions.conf loaded.\n","");
 
 	//if(processor_location) {
@@ -558,17 +604,37 @@ int main(int argc, char **argv) {
 	//}
 
 
-	ctx = start_webserver( );
+
+	for (i = 0; i < newznab_sites_counter; i++) {
+		DPRINTF(E_DEBUG, L_GENERAL, "%s %s\n",newznab_site[i].url, newznab_site[i].apikey);
+	}
+
+
 	DPRINTF(E_DEBUG, L_GENERAL, "Webserver started.\n","");
 #ifdef MAKE_SEGFAULT
 	make_segfault();
 #endif
 
+
+//	pthread_t thread;
+//	pthread_attr_t attr;
+
+//	pthread_attr_init( & attr ) ;
+//	pthread_create( & thread, & attr, timer_callback, NULL ) ;
+
+	//usleep( 10 * 1000000);
+	ctx = start_webserver( );
 	/* main loop */
 	quitting = 0;
 	while (!quitting) {
 		usleep(1000);
 	}
+
+
+	// wait for timer thread to exit
+	//pthread_cancel( thread ) ;
+	//pthread_join( thread, NULL ) ;
+
 
 	DPRINTF(E_DEBUG, L_GENERAL, "minidragonfly is shutting down ...\n", "");
 	usleep(2 * 10000);
