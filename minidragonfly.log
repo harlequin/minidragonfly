@@ -1,0 +1,166 @@
+[error] minidragonfly.c:541: No tvdbapi key found, exit application
+[error] minidragonfly.c:541: No tvdbapi key found, exit application
+[info] minidragonfly.c:549: Create cache directory ...
+[warning] minidragonfly.c:203: Starting minidragonfly version 1.0 - Aphrodite
+[warning] minidragonfly.c:204: ** Development version
+[warning] minidragonfly.c:205: **   5c90c809642649b1b6bc41b0d624145c885aa404-dirty
+[warning] minidragonfly.c:206: **   Dec 16 2013 - 09:54:35
+[info] minidragonfly.c:576: Create library directory [./library].
+[debug] minidragonfly.c:581: Database opened.
+[debug] sql.c:100: sql: PRAGMA user_version
+[warning] sql.c:243: Current database version 0.
+[debug] minidragonfly.c:585: Current database version is -1.
+[warning] minidragonfly.c:588: new database have to be created.
+[debug] minidragonfly.c:597: Start to download exceptions.conf.
+[debug] minidragonfly.c:599: exceptions.conf loaded.
+[debug] minidragonfly.c:609: http://nzbs2go.com/ b8ecdf288ad03746e452c8977f40d409
+[debug] minidragonfly.c:609: http://nnplus.getshell.de/ 9fff07bb878a4f96a06befc652e3fe4d
+[debug] minidragonfly.c:613: Webserver started.
+[debug] minidragonfly.c:369: Document root: ./webui
+[debug] rpc.c:622: >> shows
+[debug] rpc.c:640: >> [ ]
+[debug] rpc.c:622: >> stats
+[debug] sql.c:100: sql: SELECT COUNT(tv_serie.id) FROM tv_serie
+[debug] rpc.c:640: >> {"shows_total":"0"}
+[debug] rpc.c:622: >> ui.data
+[debug] rpc.c:640: >> { "episode_states": [{"name":"Skipped", "value":"0"},{"name":"Wanted", "value":"1"},{"name":"Archived", "value":"2"},{"name":"Ignored", "value":"3"},{"name":"Snatched", "value":"4"} ], "quality": [{"name":"NA", "value":"0"},{"name":"SD TV", "value":"1"},{"name":"SD DVD", "value":"2"},{"name":"HD TV", "value":"4"},{"name":"RawHD TV", "value":"8"},{"name":"1080p HD TV", "value":"16"},{"name":"720p WEB-DL", "value":"32"},{"name":"1080p WEB-DL", "value":"64"},{"name":"720p BluRay", "value":"128"},{"name":"1080p BluRay", "value":"256"} ], "quality_presets": [{"name":"SD", "value":"3"},{"name":"HD", "value":"508"},{"name":"HD720P", "value":"164"},{"name":"HD1080P", "value":"336"},{"name":"Any", "value":"511"} ]}
+[debug] rpc.c:622: >> news
+[debug] rpc.c:640: >> [ ]
+[debug] rpc.c:622: >> searchtvdb
+[debug] rpc.c:227: Searching for Breaking bad.
+[debug] rpc.c:231: http://www.thetvdb.com/api/GetSeries.php?seriesname=Breaking%20bad.
+[debug] utils.c:151: curl_easy_perform() failed: Couldn't connect to server
+[debug] rpc.c:640: >> " no series found ..."
+[warning] minidragonfly.c:123: Shutdown Application
+[debug] minidragonfly.c:639: minidragonfly is shutting down ...
+[debug] minidragonfly.c:641: Close webserver
+[debug] minidragonfly.c:643: Close database
+[debug] minidragonfly.c:645: Server will shutdown
+[info] minidragonfly.c:549: Create cache directory ...
+[warning] minidragonfly.c:203: Starting minidragonfly version 1.0 - Aphrodite
+[warning] minidragonfly.c:204: ** Development version
+[warning] minidragonfly.c:205: **   5c90c809642649b1b6bc41b0d624145c885aa404-dirty
+[warning] minidragonfly.c:206: **   Dec 16 2013 - 09:54:35
+[info] minidragonfly.c:576: Create library directory [./library].
+[debug] minidragonfly.c:581: Database opened.
+[debug] sql.c:100: sql: PRAGMA user_version
+[warning] sql.c:243: Current database version 5.
+[debug] minidragonfly.c:585: Current database version is 0.
+[debug] minidragonfly.c:597: Start to download exceptions.conf.
+[debug] minidragonfly.c:599: exceptions.conf loaded.
+[debug] minidragonfly.c:609: http://nzbs2go.com/ b8ecdf288ad03746e452c8977f40d409
+[debug] minidragonfly.c:609: http://nnplus.getshell.de/ 9fff07bb878a4f96a06befc652e3fe4d
+[debug] minidragonfly.c:613: Webserver started.
+[debug] minidragonfly.c:369: Document root: ./webui
+[debug] rpc.c:622: >> searchtvdb
+[debug] rpc.c:227: Searching for Breaking bad.
+[debug] rpc.c:231: http://www.thetvdb.com/api/GetSeries.php?seriesname=Breaking%20bad.
+[debug] utils.c:154: 645 bytes retrieved
+[debug] rpc.c:240: Chunk size is 645.
+[debug] rpc.c:640: >> [ { "name": "Breaking Bad", "id": "81189" } ]
+[debug] rpc.c:622: >> show.addnew
+[debug] rpc.c:858: NOT EXISTS
+[debug] utils.c:348: http://api.fanart.tv/webservice/series/52fdc988539881c2ac1f3852ddfbfc5f/81189/json/hdclearart/1/1
+[debug] rpc.c:622: >> shows
+[debug] rpc.c:640: >> [ ]
+[debug] utils.c:154: 570 bytes retrieved
+[debug] utils.c:353: Start parsing the json response {"Breaking Bad":{"thetvdb_id":"81189","hdclearart":[{"id":"20688","url":"http://assets.fanart.tv/fanart/tv/81189/hdclearart/breaking-bad-504b8e9218ddb.png","lang":"en","likes":"3"},{"id":"29415","url":"http://assets.fanart.tv/fanart/tv/81189/hdclearart/breaking-bad-51a76801e4c2b.png","lang":"en","likes":"3"},{"id":"20689","url":"http://assets.fanart.tv/fanart/tv/81189/hdclearart/breaking-bad-504b8ea3b1231.png","lang":"en","likes":"1"},{"id":"29416","url":"http://assets.fanart.tv/fanart/tv/81189/hdclearart/breaking-bad-51a76811ed979.png","lang":"hu","likes":"0"}]}}
+[debug] utils.c:359: Breaking Bad
+[debug] utils.c:366: Download fanart http://assets.fanart.tv/fanart/tv/81189/hdclearart/breaking-bad-504b8e9218ddb.png
+[debug] utils.c:154: 496116 bytes retrieved
+[debug] utils.c:372: ==> TO fanart ./cache/hdclearart/81189.png
+[debug] utils.c:348: http://api.fanart.tv/webservice/series/52fdc988539881c2ac1f3852ddfbfc5f/81189/json/tvthumb/1/1
+[debug] utils.c:154: 1431 bytes retrieved
+[debug] utils.c:353: Start parsing the json response {"Breaking Bad":{"thetvdb_id":"81189","tvthumb":[{"id":"5421","url":"http://assets.fanart.tv/fanart/tv/81189/tvthumb/B_81189 (7).jpg","lang":"en","likes":"4"},{"id":"16909","url":"http://assets.fanart.tv/fanart/tv/81189/tvthumb/breaking-bad-4f7adc6631404.jpg","lang":"en","likes":"3"},{"id":"5419","url":"http://assets.fanart.tv/fanart/tv/81189/tvthumb/B_81189 (2).jpg","lang":"en","likes":"2"},{"id":"5424","url":"http://assets.fanart.tv/fanart/tv/81189/tvthumb/B_81189 (4).jpg","lang":"en","likes":"2"},{"id":"15756","url":"http://assets.fanart.tv/fanart/tv/81189/tvthumb/breaking-bad-4f2790a25f183.jpg","lang":"en","likes":"2"},{"id":"33493","url":"http://assets.fanart.tv/fanart/tv/81189/tvthumb/breaking-bad-52332fdf2bc70.jpg","lang":"en","likes":"2"},{"id":"5420","url":"http://assets.fanart.tv/fanart/tv/81189/tvthumb/B_81189 (8).jpg","lang":"en","likes":"1"},{"id":"5422","url":"http://assets.fanart.tv/fanart/tv/81189/tvthumb/B_81189 (6).jpg","lang":"en","likes":"1"},{"id":"5423","url":"http://assets.fanart.tv/fanart/tv/81189/tvthumb/B_81189 (5).jpg","lang":"en","likes":"1"},{"id":"5425","url":"http://assets.fanart.tv/fanart/tv/81189/tvthumb/B_81189 (3).jpg","lang":"en","likes":"1"},{"id":"5426","url":"http://assets.fanart.tv/fanart/tv/81189/tvthumb/B_81189.jpg","lang":"en","likes":"1"},{"id":"28691","url":"http://assets.fanart.tv/fanart/tv/81189/tvthumb/breaking-bad-51890dcf7465d.jpg","lang":"hu","likes":"1"}]}}
+[debug] utils.c:359: Breaking Bad
+[debug] utils.c:366: Download fanart http://assets.fanart.tv/fanart/tv/81189/tvthumb/B_81189 (7).jpg
+[debug] utils.c:154: 137637 bytes retrieved
+[debug] utils.c:372: ==> TO fanart ./cache/tvthumb/81189.png
+[debug] rpc.c:882: Downloading series info for 81189
+[debug] rpc.c:883: http://www.thetvdb.com/api/9DAF49C96CBF8DAC/series/81189/all/en.xml
+[debug] utils.c:154: 92359 bytes retrieved
+[debug] rpc.c:891: xml is parsed ... get shows now
+[debug] rpc.c:898: Found series name Breaking Bad
+[debug] rpc.c:738: Parse episodes ...
+[debug] rpc.c:640: >> "ok"
+[debug] rpc.c:622: >> shows
+[debug] rpc.c:381: sql: SELECT DISTINCT tv_episode.language FROM tv_episode WHERE tv_episode.tv_series_id = 81189
+[debug] rpc.c:384: Found language
+[debug] rpc.c:404: Breaking Bad
+[debug] rpc.c:640: >> [ { "id": "81189", "name": "Breaking Bad", "skipped": "0", "wanted": "78", "archived": "0", "ignored": "0", "snatched": "0", "total": "78", "languages": [ "de" ] } ]
+[debug] rpc.c:622: >> stats
+[debug] sql.c:100: sql: SELECT COUNT(tv_serie.id) FROM tv_serie
+[debug] rpc.c:622: >> ui.data
+[debug] rpc.c:640: >> {"shows_total":"1"}
+[debug] rpc.c:640: >> { "episode_states": [{"name":"Skipped", "value":"0"},{"name":"Wanted", "value":"1"},{"name":"Archived", "value":"2"},{"name":"Ignored", "value":"3"},{"name":"Snatched", "value":"4"} ], "quality": [{"name":"NA", "value":"0"},{"name":"SD TV", "value":"1"},{"name":"SD DVD", "value":"2"},{"name":"HD TV", "value":"4"},{"name":"RawHD TV", "value":"8"},{"name":"1080p HD TV", "value":"16"},{"name":"720p WEB-DL", "value":"32"},{"name":"1080p WEB-DL", "value":"64"},{"name":"720p BluRay", "value":"128"},{"name":"1080p BluRay", "value":"256"} ], "quality_presets": [{"name":"SD", "value":"3"},{"name":"HD", "value":"508"},{"name":"HD720P", "value":"164"},{"name":"HD1080P", "value":"336"},{"name":"Any", "value":"511"} ]}
+[debug] rpc.c:622: >> news
+[debug] rpc.c:640: >> [ { "id": "81189", "comment": "New show added" } ]
+[debug] rpc.c:622: >> episodes
+[debug] rpc.c:451: List episodes for 81189
+[debug] rpc.c:640: >> [{"id":"78","title":"Felina","season":"5","episode":"16","status":"1","language":"de"},{"id":"77","title":"Granite State","season":"5","episode":"15","status":"1","language":"de"},{"id":"76","title":"Ozymandias","season":"5","episode":"14","status":"1","language":"de"},{"id":"75","title":"To'hajiilee","season":"5","episode":"13","status":"1","language":"de"},{"id":"74","title":"Rabid Dog","season":"5","episode":"12","status":"1","language":"de"},{"id":"73","title":"Confessions","season":"5","episode":"11","status":"1","language":"de"},{"id":"72","title":"Buried","season":"5","episode":"10","status":"1","language":"de"},{"id":"71","title":"Blood Money","season":"5","episode":"9","status":"1","language":"de"},{"id":"70","title":"Gliding Over All","season":"5","episode":"8","status":"1","language":"de"},{"id":"69","title":"Say My Name","season":"5","episode":"7","status":"1","language":"de"},{"id":"68","title":"Buyout","season":"5","episode":"6","status":"1","language":"de"},{"id":"67","title":"Dead Freight","season":"5","episode":"5","status":"1","language":"de"},{"id":"66","title":"Fifty-One","season":"5","episode":"4","status":"1","language":"de"},{"id":"65","title":"Hazard Pay","season":"5","episode":"3","status":"1","language":"de"},{"id":"64","title":"Madrigal","season":"5","episode":"2","status":"1","language":"de"},{"id":"63","title":"Live Free or Die","season":"5","episode":"1","status":"1","language":"de"},{"id":"62","title":"Face Off","season":"4","episode":"13","status":"1","language":"de"},{"id":"61","title":"End Times","season":"4","episode":"12","status":"1","language":"de"},{"id":"60","title":"Crawl Space","season":"4","episode":"11","status":"1","language":"de"},{"id":"59","title":"Salud","season":"4","episode":"10","status":"1","language":"de"},{"id":"58","title":"Bug","season":"4","episode":"9","status":"1","language":"de"},{"id":"57","title":"Hermanos","season":"4","episode":"8","status":"1","language":"de"},{"id":"56","title":"Problem Dog","season":"4","episode":"7","status":"1","language":"de"},{"id":"55","title":"Cornered","season":"4","episode":"6","status":"1","language":"de"},{"id":"54","title":"Shotgun","season":"4","episode":"5","status":"1","language":"de"},{"id":"53","title":"Bullet Points","season":"4","episode":"4","status":"1","language":"de"},{"id":"52","title":"Open House","season":"4","episode":"3","status":"1","language":"de"},{"id":"51","title":"Thirty-Eight Snub","season":"4","episode":"2","status":"1","language":"de"},{"id":"50","title":"Box Cutter","season":"4","episode":"1","status":"1","language":"de"},{"id":"49","title":"Full Measure","season":"3","episode":"13","status":"1","language":"de"},{"id":"48","title":"Half Measures","season":"3","episode":"12","status":"1","language":"de"},{"id":"47","title":"Abiquiu","season":"3","episode":"11","status":"1","language":"de"},{"id":"46","title":"Fly","season":"3","episode":"10","status":"1","language":"de"},{"id":"45","title":"Kafkaesque","season":"3","episode":"9","status":"1","language":"de"},{"id":"44","title":"I See You","season":"3","episode":"8","status":"1","language":"de"},{"id":"43","title":"One Minute","season":"3","episode":"7","status":"1","language":"de"},{"id":"42","title":"Sunset","season":"3","episode":"6","status":"1","language":"de"},{"id":"41","title":"Mas","season":"3","episode":"5","status":"1","language":"de"},{"id":"40","title":"Green Light","season":"3","episode":"4","status":"1","language":"de"},{"id":"39","title":"I.F.T.","season":"3","episode":"3","status":"1","language":"de"},{"id":"38","title":"Caballo Sin Nombre","season":"3","episode":"2","status":"1","language":"de"},{"id":"37","title":"No Mas","season":"3","episode":"1","status":"1","language":"de"},{"id":"36","title":"ABQ","season":"2","episode":"13","status":"1","language":"de"},{"id":"35","title":"Phoenix","season":"2","episode":"12","status":"1","language":"de"},{"id":"34","title":"Mandala","season":"2","episode":"11","status":"1","language":"de"},{"id":"33","title":"Over","season":"2","episode":"10","status":"1","language":"de"},{"id":"32","title":"4 Days Out","season":"2","episode":"9","status":"1","language":"de"},{"id":"31","title":"Better Call Saul","season":"2","episode":"8","status":"1","language":"de"},{"id":"30","title":"Negro y Azul","season":"2","episode":"7","status":"1","language":"de"},{"id":"29","title":"Peekaboo","season":"2","episode":"6","status":"1","language":"de"},{"id":"28","title":"Breakage","season":"2","episode":"5","status":"1","language":"de"},{"id":"27","title":"Down","season":"2","episode":"4","status":"1","language":"de"},{"id":"26","title":"Bit by a Dead Bee","season":"2","episode":"3","status":"1","language":"de"},{"id":"25","title":"Grilled","season":"2","episode":"2","status":"1","language":"de"},{"id":"24","title":"Seven Thirty-Seven","season":"2","episode":"1","status":"1","language":"de"},{"id":"23","title":"A No-Rough-Stuff-Type Deal","season":"1","episode":"7","status":"1","language":"de"},{"id":"22","title":"Crazy Handful of Nothin'","season":"1","episode":"6","status":"1","language":"de"},{"id":"21","title":"Gray Matter","season":"1","episode":"5","status":"1","language":"de"},{"id":"20","title":"Cancer Man","season":"1","episode":"4","status":"1","language":"de"},{"id":"19","title":"...And the Bag's in the River","season":"1","episode":"3","status":"1","language":"de"},{"id":"18","title":"Cat's in the Bag...","season":"1","episode":"2","status":"1","language":"de"},{"id":"17","title":"Pilot","season":"1","episode":"1","status":"1","language":"de"},{"id":"16","title":"Live Saul Cam","season":"0","episode":"17","status":"1","language":"de"},{"id":"15","title":"Letters to Saul - Did I Murder an Old Man","season":"0","episode":"16","status":"1","language":"de"},{"id":"14","title":"Better Call Saul - Who Can You Sue","season":"0","episode":"15","status":"1","language":"de"},{"id":"13","title":"Better Call Saul - Wendy","season":"0","episode":"14","status":"1","language":"de"},{"id":"12","title":"Team S.C.I.E.N.C.E","season":"0","episode":"13","status":"1","language":"de"},{"id":"11","title":"Better Call Saul - Wayfarer 515","season":"0","episode":"12","status":"1","language":"de"},{"id":"10","title":"Better Call Saul - Tiger Trouble","season":"0","episode":"11","status":"1","language":"de"},{"id":"9","title":"Better Call Saul - Badger","season":"0","episode":"10","status":"1","language":"de"},{"id":"8","title":"Better Call Saul - Saul Better Help My Mom","season":"0","episode":"9","status":"1","language":"de"},{"id":"7","title":"Better Call Saul - Carl B.","season":"0","episode":"8","status":"1","language":"de"},{"id":"6","title":"Season 4 Sneak Peak","season":"0","episode":"6","status":"1","language":"de"},{"id":"5","title":"The Break-In","season":"0","episode":"5","status":"1","language":"de"},{"id":"4","title":"Marie's Confession","season":"0","episode":"4","status":"1","language":"de"},{"id":"3","title":"TwaughtHammer","season":"0","episode":"3","status":"1","language":"de"},{"id":"2","title":"Wedding Day","season":"0","episode":"2","status":"1","language":"de"},{"id":"1","title":"Good Cop Bad Cop","season":"0","episode":"1","status":"1","language":"de"}]
+[debug] rpc.c:622: >> searchtvdb
+[debug] rpc.c:227: Searching for talking bad.
+[debug] rpc.c:231: http://www.thetvdb.com/api/GetSeries.php?seriesname=talking%20bad.
+[debug] utils.c:154: 960 bytes retrieved
+[debug] rpc.c:240: Chunk size is 960.
+[debug] rpc.c:640: >> [ { "name": "Talking Bad", "id": "272219" } ]
+[debug] rpc.c:622: >> show.addnew
+[debug] rpc.c:858: NOT EXISTS
+[debug] utils.c:348: http://api.fanart.tv/webservice/series/52fdc988539881c2ac1f3852ddfbfc5f/272219/json/hdclearart/1/1
+[debug] rpc.c:622: >> shows
+[debug] rpc.c:381: sql: SELECT DISTINCT tv_episode.language FROM tv_episode WHERE tv_episode.tv_series_id = 81189
+[debug] rpc.c:384: Found language
+[debug] rpc.c:404: Breaking Bad
+[debug] rpc.c:640: >> [ { "id": "81189", "name": "Breaking Bad", "skipped": "0", "wanted": "78", "archived": "0", "ignored": "0", "snatched": "0", "total": "78", "languages": [ "de" ] } ]
+[debug] utils.c:154: 4 bytes retrieved
+[debug] utils.c:353: Start parsing the json response null
+[error] utils.c:382: Can not download image!
+[debug] utils.c:348: http://api.fanart.tv/webservice/series/52fdc988539881c2ac1f3852ddfbfc5f/272219/json/tvthumb/1/1
+[debug] utils.c:154: 4 bytes retrieved
+[debug] utils.c:353: Start parsing the json response null
+[error] utils.c:382: Can not download image!
+[debug] rpc.c:882: Downloading series info for 272219
+[debug] rpc.c:883: http://www.thetvdb.com/api/9DAF49C96CBF8DAC/series/272219/all/en.xml
+[debug] utils.c:154: 16345 bytes retrieved
+[debug] rpc.c:891: xml is parsed ... get shows now
+[debug] rpc.c:898: Found series name Talking Bad
+[debug] rpc.c:738: Parse episodes ...
+[debug] rpc.c:640: >> "ok"
+[debug] rpc.c:622: >> shows
+[debug] rpc.c:381: sql: SELECT DISTINCT tv_episode.language FROM tv_episode WHERE tv_episode.tv_series_id = 81189
+[debug] rpc.c:384: Found language
+[debug] rpc.c:404: Breaking Bad
+[debug] rpc.c:381: sql: SELECT DISTINCT tv_episode.language FROM tv_episode WHERE tv_episode.tv_series_id = 272219
+[debug] rpc.c:384: Found language
+[debug] rpc.c:404: Talking Bad
+[debug] rpc.c:640: >> [ { "id": "81189", "name": "Breaking Bad", "skipped": "0", "wanted": "78", "archived": "0", "ignored": "0", "snatched": "0", "total": "78", "languages": [ "de" ] }, { "id": "272219", "name": "Talking Bad", "skipped": "15", "wanted": "0", "archived": "0", "ignored": "0", "snatched": "0", "total": "15", "languages": [ "de" ] } ]
+[debug] rpc.c:622: >> stats
+[debug] sql.c:100: sql: SELECT COUNT(tv_serie.id) FROM tv_serie
+[debug] rpc.c:640: >> {"shows_total":"2"}
+[debug] rpc.c:622: >> ui.data
+[debug] rpc.c:640: >> { "episode_states": [{"name":"Skipped", "value":"0"},{"name":"Wanted", "value":"1"},{"name":"Archived", "value":"2"},{"name":"Ignored", "value":"3"},{"name":"Snatched", "value":"4"} ], "quality": [{"name":"NA", "value":"0"},{"name":"SD TV", "value":"1"},{"name":"SD DVD", "value":"2"},{"name":"HD TV", "value":"4"},{"name":"RawHD TV", "value":"8"},{"name":"1080p HD TV", "value":"16"},{"name":"720p WEB-DL", "value":"32"},{"name":"1080p WEB-DL", "value":"64"},{"name":"720p BluRay", "value":"128"},{"name":"1080p BluRay", "value":"256"} ], "quality_presets": [{"name":"SD", "value":"3"},{"name":"HD", "value":"508"},{"name":"HD720P", "value":"164"},{"name":"HD1080P", "value":"336"},{"name":"Any", "value":"511"} ]}
+[debug] rpc.c:622: >> news
+[debug] rpc.c:640: >> [ { "id": "81189", "comment": "New show added" }, { "id": "272219", "comment": "New show added" } ]
+[debug] rpc.c:622: >> episodes
+[debug] rpc.c:451: List episodes for 272219
+[debug] rpc.c:640: >> [{"id":"93","title":"Felina","season":"1","episode":"8","status":"0","language":"de"},{"id":"92","title":"Granite State","season":"1","episode":"7","status":"0","language":"de"},{"id":"91","title":"Ozymandias","season":"1","episode":"6","status":"0","language":"de"},{"id":"90","title":"To'hajiilee","season":"1","episode":"5","status":"0","language":"de"},{"id":"89","title":"Rabid Dog","season":"1","episode":"4","status":"0","language":"de"},{"id":"88","title":"Confessions","season":"1","episode":"3","status":"0","language":"de"},{"id":"87","title":"Buried","season":"1","episode":"2","status":"0","language":"de"},{"id":"86","title":"Blood Money","season":"1","episode":"1","status":"0","language":"de"},{"id":"85","title":"Granite State: Online Bonus","season":"0","episode":"7","status":"0","language":"de"},{"id":"84","title":"Ozymandias: Online Bonus","season":"0","episode":"6","status":"0","language":"de"},{"id":"83","title":"To'hajiilee: Online Bonus","season":"0","episode":"5","status":"0","language":"de"},{"id":"82","title":"Rabid Dog: Online Bonus","season":"0","episode":"4","status":"0","language":"de"},{"id":"81","title":"Confessions: Online Bonus","season":"0","episode":"3","status":"0","language":"de"},{"id":"80","title":"Buried: Online Bonus","season":"0","episode":"2","status":"0","language":"de"},{"id":"79","title":"Blood Money: Online Bonus","season":"0","episode":"1","status":"0","language":"de"}]
+[debug] rpc.c:622: >> shows
+[debug] rpc.c:381: sql: SELECT DISTINCT tv_episode.language FROM tv_episode WHERE tv_episode.tv_series_id = 81189
+[debug] rpc.c:384: Found language
+[debug] rpc.c:404: Breaking Bad
+[debug] rpc.c:381: sql: SELECT DISTINCT tv_episode.language FROM tv_episode WHERE tv_episode.tv_series_id = 272219
+[debug] rpc.c:384: Found language
+[debug] rpc.c:404: Talking Bad
+[debug] rpc.c:640: >> [ { "id": "81189", "name": "Breaking Bad", "skipped": "0", "wanted": "78", "archived": "0", "ignored": "0", "snatched": "0", "total": "78", "languages": [ "de" ] }, { "id": "272219", "name": "Talking Bad", "skipped": "15", "wanted": "0", "archived": "0", "ignored": "0", "snatched": "0", "total": "15", "languages": [ "de" ] } ]
+[debug] rpc.c:622: >> stats
+[debug] sql.c:100: sql: SELECT COUNT(tv_serie.id) FROM tv_serie
+[debug] rpc.c:640: >> {"shows_total":"2"}
+[debug] rpc.c:622: >> ui.data
+[debug] rpc.c:640: >> { "episode_states": [{"name":"Skipped", "value":"0"},{"name":"Wanted", "value":"1"},{"name":"Archived", "value":"2"},{"name":"Ignored", "value":"3"},{"name":"Snatched", "value":"4"} ], "quality": [{"name":"NA", "value":"0"},{"name":"SD TV", "value":"1"},{"name":"SD DVD", "value":"2"},{"name":"HD TV", "value":"4"},{"name":"RawHD TV", "value":"8"},{"name":"1080p HD TV", "value":"16"},{"name":"720p WEB-DL", "value":"32"},{"name":"1080p WEB-DL", "value":"64"},{"name":"720p BluRay", "value":"128"},{"name":"1080p BluRay", "value":"256"} ], "quality_presets": [{"name":"SD", "value":"3"},{"name":"HD", "value":"508"},{"name":"HD720P", "value":"164"},{"name":"HD1080P", "value":"336"},{"name":"Any", "value":"511"} ]}
+[debug] rpc.c:622: >> news
+[debug] rpc.c:640: >> [ { "id": "81189", "comment": "New show added" }, { "id": "272219", "comment": "New show added" } ]
+[warning] minidragonfly.c:123: Shutdown Application
+[debug] minidragonfly.c:639: minidragonfly is shutting down ...
+[debug] minidragonfly.c:641: Close webserver
+[debug] minidragonfly.c:643: Close database
+[debug] minidragonfly.c:645: Server will shutdown
